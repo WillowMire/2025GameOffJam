@@ -1,0 +1,122 @@
+[gd_scene load_steps=2 format=3 uid="uid://c6uubfh172683"]
+
+[ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://arcade_main.gd" id="1_kjmcv"]
+
+[node name="Arcade" type="Node2D" node_paths=PackedStringArray("line")]
+script = ExtResource("1_kjmcv")
+line = NodePath("SinWave")
+a_var = 150.0
+b_var = 0.007
+
+[node name="SinWave" type="Line2D" parent="."]
+points = PackedVector2Array(0, 400, 1153, 400)
+width = 9.945
+default_color = Color(0.86, 0.2064, 0.2064, 1)
+
+[node name="DEBUG" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_use_anchors_ = true
+
+[node name="A_Edit" type="LineEdit" parent="DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 22.0
+offset_top = 7.0
+offset_right = 90.5625
+offset_bottom = 38.0
+metadata/_edit_use_anchors_ = true
+
+[node name="B_Edit" type="LineEdit" parent="DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 115.0
+offset_top = 6.0
+offset_right = 183.5625
+offset_bottom = 37.0
+metadata/_edit_use_anchors_ = true
+
+[node name="C_Edit" type="LineEdit" parent="DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 213.0
+offset_top = 7.0
+offset_right = 281.5625
+offset_bottom = 38.0
+metadata/_edit_use_anchors_ = true
+
+[node name="D_Edit" type="LineEdit" parent="DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 307.0
+offset_top = 6.0
+offset_right = 375.5625
+offset_bottom = 37.0
+metadata/_edit_use_anchors_ = true
+
+[node name="A" type="Label" parent="DEBUG"]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 20.0
+offset_right = 99.0
+offset_bottom = 43.0
+text = "A"
+
+[node name="B" type="Label" parent="DEBUG"]
+layout_mode = 0
+offset_left = 157.0
+offset_top = 20.0
+offset_right = 197.0
+offset_bottom = 43.0
+text = "B"
+
+[node name="C" type="Label" parent="DEBUG"]
+layout_mode = 0
+offset_left = 253.0
+offset_top = 18.0
+offset_right = 293.0
+offset_bottom = 41.0
+text = "C"
+
+[node name="D" type="Label" parent="DEBUG"]
+layout_mode = 0
+offset_left = 351.0
+offset_top = 16.0
+offset_right = 391.0
+offset_bottom = 39.0
+text = "D"
+
+[node name="Get slope" type="LineEdit" parent="DEBUG"]
+layout_mode = 0
+offset_right = 68.5625
+offset_bottom = 31.0
+text = "x?"
+
+[node name="slope at x" type="Label" parent="DEBUG"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[connection signal="text_submitted" from="DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
+[connection signal="text_submitted" from="DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
+[connection signal="text_submitted" from="DEBUG/C_Edit" to="." method="_on_c_edit_text_submitted"]
+[connection signal="text_submitted" from="DEBUG/D_Edit" to="." method="_on_d_edit_text_submitted"]
