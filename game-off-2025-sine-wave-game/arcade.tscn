@@ -1,12 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=4 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://arcade_main.gd" id="1_kjmcv"]
+[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="2_658re"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
 
 [node name="Arcade" type="Node2D" node_paths=PackedStringArray("line")]
 script = ExtResource("1_kjmcv")
+DEBUG = true
 line = NodePath("SinWave")
 a_var = 150.0
 b_var = 0.007
+d_var = 450.0
 
 [node name="SinWave" type="Line2D" parent="."]
 points = PackedVector2Array(0, 400, 1153, 400)
@@ -115,6 +120,25 @@ text = "x?"
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2(180, 95)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+z_index = 2
+shape = SubResource("CircleShape2D_4ltp0")
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D"]
+z_index = 1
+scale = Vector2(0.16128054, 0.16128054)
+texture = ExtResource("2_658re")
+region_rect = Rect2(3.105, 0, 115.895, 127.5)
+
+[node name="WaveCollision" type="RigidBody2D" parent="."]
+position = Vector2(1, 0)
+gravity_scale = 0.0
+lock_rotation = true
+freeze = true
 
 [connection signal="text_submitted" from="DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
 [connection signal="text_submitted" from="DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
