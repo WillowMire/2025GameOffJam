@@ -1,19 +1,28 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=6 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://arcade_main.gd" id="1_kjmcv"]
 [ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="2_658re"]
 
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
+friction = 0.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
 
-[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "line")]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4ltp0"]
+friction = 0.0
+
+[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "line")]
 script = ExtResource("1_kjmcv")
 DEBUG = true
 player = NodePath("PlayerObject")
+cam = NodePath("PlayerObject/Camera2D")
 line = NodePath("SinWave")
-a_var = 150.0
-b_var = 0.007
-d_var = 450.0
-control_speed = 150.0
+a_var = 50.0
+b_var = 0.015
+d_var = 350.0
+min_control_speed = 100.0
+max_control_speed = 250.0
+move_control_lerp_time = 1.0
 
 [node name="SinWave" type="Line2D" parent="."]
 points = PackedVector2Array(0, 400, 1153, 400)
@@ -136,7 +145,11 @@ offset_right = 554.0
 offset_bottom = 46.0
 
 [node name="PlayerObject" type="RigidBody2D" parent="."]
-position = Vector2(180, 95)
+position = Vector2(276, 97)
+mass = 0.301
+physics_material_override = SubResource("PhysicsMaterial_658re")
+lock_rotation = true
+continuous_cd = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -149,13 +162,18 @@ texture = ExtResource("2_658re")
 region_rect = Rect2(3.105, 0, 115.895, 127.5)
 
 [node name="Camera2D" type="Camera2D" parent="PlayerObject"]
-position = Vector2(-1, 0)
+offset = Vector2(200, -150)
+zoom = Vector2(0.73, 0.73)
 
 [node name="WaveCollision" type="RigidBody2D" parent="."]
 position = Vector2(1, 0)
+physics_material_override = SubResource("PhysicsMaterial_4ltp0")
 gravity_scale = 0.0
 lock_rotation = true
 freeze = true
+continuous_cd = 2
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [connection signal="text_submitted" from="DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
 [connection signal="text_submitted" from="DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
