@@ -4,9 +4,11 @@ class_name _ArcadeMain
 @export var DEBUG : bool
 @export var player : RigidBody2D
 @export var cam : Camera2D
+@export var sin_label : Label
 
 # GOAL
-# add sin wave function UI in top left
+# tune collision and movement to feel good
+# learn and configure viewport, then adjust wave size depending on viewport
 
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
@@ -34,13 +36,26 @@ func _ready() -> void:
 	draw_wave()
 	start_sin_collision()
 	#poly_start_sin_collision()
+	update_sin_label()
 
-#might change to _physics_process if theres a problem
+#might change to _process if theres a problem
 func _physics_process(delta: float) -> void:
-	move_wave_data(delta)
+	push_player() # applies force to player, might move this to player
+	move_wave_data(delta) # controls wave by changing variables before 
 	draw_wave()
 	update_sin_collision() #this may cause problems later, if so try making this and the draw function into lerps
 	#poly_update_sin_collision()
+	update_sin_label()
+
+func push_player():
+	player.apply_force(Vector2(50, 0))
+
+func update_sin_label():
+	var a = str(roundi(a_var))
+	var b = str(roundi(b_var))
+	var c = str(roundi(c_var))
+	var d = str(roundi(d_var))
+	sin_label.text = "f(x) = " + a + "Sin(" + b + "(x + " + c + ")) + " + d
 
 var sin_collision_array : Array[CollisionShape2D] #change to poly or normal depending on what sincollision im doing
 func start_sin_collision() -> void:

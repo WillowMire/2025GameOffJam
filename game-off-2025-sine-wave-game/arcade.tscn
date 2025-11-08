@@ -5,17 +5,19 @@
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
 friction = 0.0
+absorbent = true
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4ltp0"]
 friction = 0.0
 
-[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "line")]
+[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "sin_label", "line")]
 script = ExtResource("1_kjmcv")
 DEBUG = true
 player = NodePath("PlayerObject")
 cam = NodePath("PlayerObject/Camera2D")
+sin_label = NodePath("CanvasLayer/SinFunc")
 line = NodePath("SinWave")
 a_var = 50.0
 b_var = 0.015
@@ -146,10 +148,10 @@ offset_bottom = 46.0
 
 [node name="PlayerObject" type="RigidBody2D" parent="."]
 position = Vector2(276, 97)
-mass = 0.301
+mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_658re")
 lock_rotation = true
-continuous_cd = 2
+continuous_cd = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -174,6 +176,13 @@ freeze = true
 continuous_cd = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="SinFunc" type="Label" parent="CanvasLayer"]
+offset_left = 53.0
+offset_top = 48.0
+offset_right = 136.0
+offset_bottom = 131.0
+text = "f(x) = Asin(b(x+c))+d"
 
 [connection signal="text_submitted" from="DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
 [connection signal="text_submitted" from="DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
