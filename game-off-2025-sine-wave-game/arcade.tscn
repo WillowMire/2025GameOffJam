@@ -1,7 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=7 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://arcade_main.gd" id="1_kjmcv"]
 [ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="2_658re"]
+
+[sub_resource type="Curve" id="Curve_658re"]
+_data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.116279095, 0.516854), 2.604787, 2.604787, 0, 0, Vector2(0.50000006, 1), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
 friction = 0.0
@@ -11,159 +15,48 @@ absorbent = true
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4ltp0"]
 friction = 0.0
+absorbent = true
 
 [node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "sin_label", "line")]
 script = ExtResource("1_kjmcv")
 DEBUG = true
-player = NodePath("PlayerObject")
-cam = NodePath("PlayerObject/Camera2D")
+player = NodePath("SinWave/PlayerObject")
+cam = NodePath("SinWave/PlayerObject/Camera2D")
 sin_label = NodePath("CanvasLayer/SinFunc")
 line = NodePath("SinWave")
 a_var = 50.0
 b_var = 0.015
-d_var = 350.0
 min_control_speed = 100.0
 max_control_speed = 250.0
-move_control_lerp_time = 1.0
+v_move_curve = SubResource("Curve_658re")
+h_move_control_lerp_time = 1.0
+v_up_multiplier = 0.65
+v_down_multiplier = 1.75
 
 [node name="SinWave" type="Line2D" parent="."]
 points = PackedVector2Array(0, 400, 1153, 400)
 width = 9.945
 default_color = Color(0.86, 0.2064, 0.2064, 1)
 
-[node name="DEBUG" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="A_Edit" type="LineEdit" parent="DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 22.0
-offset_top = 7.0
-offset_right = 90.5625
-offset_bottom = 38.0
-metadata/_edit_use_anchors_ = true
-
-[node name="B_Edit" type="LineEdit" parent="DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 115.0
-offset_top = 6.0
-offset_right = 183.5625
-offset_bottom = 37.0
-metadata/_edit_use_anchors_ = true
-
-[node name="C_Edit" type="LineEdit" parent="DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 213.0
-offset_top = 7.0
-offset_right = 281.5625
-offset_bottom = 38.0
-metadata/_edit_use_anchors_ = true
-
-[node name="D_Edit" type="LineEdit" parent="DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 307.0
-offset_top = 6.0
-offset_right = 375.5625
-offset_bottom = 37.0
-metadata/_edit_use_anchors_ = true
-
-[node name="A" type="Label" parent="DEBUG"]
-layout_mode = 0
-offset_left = 59.0
-offset_top = 20.0
-offset_right = 99.0
-offset_bottom = 43.0
-text = "A"
-
-[node name="B" type="Label" parent="DEBUG"]
-layout_mode = 0
-offset_left = 157.0
-offset_top = 20.0
-offset_right = 197.0
-offset_bottom = 43.0
-text = "B"
-
-[node name="C" type="Label" parent="DEBUG"]
-layout_mode = 0
-offset_left = 253.0
-offset_top = 18.0
-offset_right = 293.0
-offset_bottom = 41.0
-text = "C"
-
-[node name="D" type="Label" parent="DEBUG"]
-layout_mode = 0
-offset_left = 351.0
-offset_top = 16.0
-offset_right = 391.0
-offset_bottom = 39.0
-text = "D"
-
-[node name="Get slope" type="LineEdit" parent="DEBUG"]
-layout_mode = 0
-offset_left = 581.0
-offset_top = 17.0
-offset_right = 649.5625
-offset_bottom = 48.0
-text = "x?"
-
-[node name="slope at x" type="Label" parent="DEBUG"]
-layout_mode = 0
-offset_left = 514.0
-offset_top = 23.0
-offset_right = 554.0
-offset_bottom = 46.0
-
-[node name="PlayerObject" type="RigidBody2D" parent="."]
-position = Vector2(276, 97)
+[node name="PlayerObject" type="RigidBody2D" parent="SinWave"]
+position = Vector2(279, -364)
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_658re")
+gravity_scale = 0.5
 lock_rotation = true
 continuous_cd = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SinWave/PlayerObject"]
 z_index = 2
 shape = SubResource("CircleShape2D_4ltp0")
 
-[node name="Sprite2D" type="Sprite2D" parent="PlayerObject"]
+[node name="Sprite2D" type="Sprite2D" parent="SinWave/PlayerObject"]
 z_index = 1
 scale = Vector2(0.16128054, 0.16128054)
 texture = ExtResource("2_658re")
 region_rect = Rect2(3.105, 0, 115.895, 127.5)
 
-[node name="Camera2D" type="Camera2D" parent="PlayerObject"]
+[node name="Camera2D" type="Camera2D" parent="SinWave/PlayerObject"]
 offset = Vector2(200, -150)
 zoom = Vector2(0.73, 0.73)
 
@@ -184,7 +77,129 @@ offset_right = 136.0
 offset_bottom = 131.0
 text = "f(x) = Asin(b(x+c))+d"
 
-[connection signal="text_submitted" from="DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
-[connection signal="text_submitted" from="DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
-[connection signal="text_submitted" from="DEBUG/C_Edit" to="." method="_on_c_edit_text_submitted"]
-[connection signal="text_submitted" from="DEBUG/D_Edit" to="." method="_on_d_edit_text_submitted"]
+[node name="DEBUG" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = 254.0
+offset_right = -45.0
+offset_bottom = 294.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="A_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 22.0
+offset_top = 7.0
+offset_right = 90.5625
+offset_bottom = 38.0
+metadata/_edit_use_anchors_ = true
+
+[node name="B_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 115.0
+offset_top = 6.0
+offset_right = 183.5625
+offset_bottom = 37.0
+metadata/_edit_use_anchors_ = true
+
+[node name="C_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 213.0
+offset_top = 7.0
+offset_right = 281.5625
+offset_bottom = 38.0
+metadata/_edit_use_anchors_ = true
+
+[node name="D_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.525
+anchor_top = 0.175
+anchor_right = 1.525
+anchor_bottom = 0.175
+offset_left = 307.0
+offset_top = 6.0
+offset_right = 375.5625
+offset_bottom = 37.0
+metadata/_edit_use_anchors_ = true
+
+[node name="A" type="Label" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 20.0
+offset_right = 99.0
+offset_bottom = 43.0
+text = "A"
+
+[node name="B" type="Label" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 157.0
+offset_top = 20.0
+offset_right = 197.0
+offset_bottom = 43.0
+text = "B"
+
+[node name="C" type="Label" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 253.0
+offset_top = 18.0
+offset_right = 293.0
+offset_bottom = 41.0
+text = "C"
+
+[node name="D" type="Label" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 351.0
+offset_top = 16.0
+offset_right = 391.0
+offset_bottom = 39.0
+text = "D"
+
+[node name="Get slope" type="LineEdit" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 581.0
+offset_top = 17.0
+offset_right = 649.5625
+offset_bottom = 48.0
+text = "x?"
+
+[node name="slope at x" type="Label" parent="CanvasLayer/DEBUG"]
+layout_mode = 0
+offset_left = 514.0
+offset_top = 23.0
+offset_right = 554.0
+offset_bottom = 46.0
+
+[node name="y = 0" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 773, 0)
+width = 5.0
+default_color = Color(0, 0, 0, 1)
+
+[node name="GridVisualController" type="Node2D" parent="."]
+
+[connection signal="text_submitted" from="CanvasLayer/DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
+[connection signal="text_submitted" from="CanvasLayer/DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
+[connection signal="text_submitted" from="CanvasLayer/DEBUG/C_Edit" to="." method="_on_c_edit_text_submitted"]
+[connection signal="text_submitted" from="CanvasLayer/DEBUG/D_Edit" to="." method="_on_d_edit_text_submitted"]

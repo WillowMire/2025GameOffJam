@@ -8,6 +8,8 @@ class_name _ArcadeMain
 
 # GOAL
 # tune collision and movement to feel good
+#(idea, when touching wave, player shoots forward, perhaps figure out which direction its touching and adjust force angle)
+# add dynamic grid drawing system, so it looks like you're on a graph
 # learn and configure viewport, then adjust wave size depending on viewport
 
 var sin_collision : CollisionShape2D
@@ -24,15 +26,17 @@ var sin_x_bounding_range : float
 @export var d_var : float
 @export var min_control_speed : float
 @export var max_control_speed : float
-@export var move_control_lerp_time : float
+@export var v_move_curve : Curve
+@export var h_move_control_lerp_time : float
 
 func _ready() -> void:
+	initial_a = a_var
 	if DEBUG:
-		$DEBUG.visible = true
-		$DEBUG/A_Edit.text = str(a_var)
-		$DEBUG/B_Edit.text = str(b_var)
-		$DEBUG/C_Edit.text = str(c_var)
-		$DEBUG/D_Edit.text = str(d_var)
+		$CanvasLayer/DEBUG.visible = true
+		$CanvasLayer/DEBUG/A_Edit.text = str(a_var)
+		$CanvasLayer/DEBUG/B_Edit.text = str(b_var)
+		$CanvasLayer/DEBUG/C_Edit.text = str(c_var)
+		$CanvasLayer/DEBUG/D_Edit.text = str(d_var)
 	draw_wave()
 	start_sin_collision()
 	#poly_start_sin_collision()
@@ -48,11 +52,12 @@ func _physics_process(delta: float) -> void:
 	update_sin_label()
 
 func push_player():
-	player.apply_force(Vector2(50, 0))
+	pass
+	#player.apply_force(Vector2(50, 0))
 
 func update_sin_label():
 	var a = str(roundi(a_var))
-	var b = str(roundi(b_var))
+	var b = str(snappedf(b_var, 0.001))
 	var c = str(roundi(c_var))
 	var d = str(roundi(d_var))
 	sin_label.text = "f(x) = " + a + "Sin(" + b + "(x + " + c + ")) + " + d
@@ -93,29 +98,65 @@ func poly_update_sin_collision() -> void:
 
 var v_move_timer : float
 var h_move_timer : float
+var prev_v_input
+@export var v_up_multiplier : float
+@export var v_down_multiplier : float
+var initial_a : float
+var temp_cur_a : float
+var moving : bool
+var prev_moving : bool
 func move_wave_data(delta : float) -> void:
-	pass
 	var v_input = Input.get_axis("up", "down")
 	var h_input = Input.get_axis("left", "right")
 	
+	#region vertical
+	#controls a timer var that is used later
 	if v_input != 0:
-		v_move_timer += delta / move_control_lerp_time
-		var v_lerp = clampf(lerpf(min_control_speed, max_control_speed, v_move_timer), min_control_speed, max_control_speed)
-		d_var += delta * v_lerp * v_input
+		if prev_v_input != v_input:
+			temp_cur_a = a_var
+			v_move_timer = 0
+			moving = true
+		v_move_timer += delta
 	elif v_input == 0:
-		v_move_timer = 0
+		if prev_v_input != v_input:
+			temp_cur_a = a_var
+			v_move_timer = 0
+		if v_move_timer < v_move_curve.max_domain:
+			v_move_timer += delta
+		elif v_move_timer > v_move_curve.max_domain:
+			v_move_timer = v_move_curve.max_domain
+			moving = false
 	
+	#if moving, move a_var according to vmovetimer and curve stuffs
+	if moving:
+		var curve = clampf(v_move_curve.sample(v_move_timer), 0, 1)
+		if v_input == 1:
+			a_var = lerpf(temp_cur_a, initial_a * v_up_multiplier, curve)
+		elif v_input == -1:
+			a_var = lerpf(temp_cur_a, initial_a * v_down_multiplier, curve)
+		elif v_input == 0:
+			a_var = lerpf(temp_cur_a, initial_a, curve)
+	else:
+		if prev_moving != moving:
+			a_var = initial_a
+	
+	prev_v_input = v_input
+	prev_moving = moving
+	#endregion
+	
+	#region horizontal
 	if h_input != 0:
-		h_move_timer += delta / move_control_lerp_time
+		h_move_timer += delta / h_move_control_lerp_time
 		var h_lerp = clampf(lerpf(min_control_speed, max_control_speed, h_move_timer), min_control_speed, max_control_speed)
 		c_var -= delta * h_lerp * h_input
 	elif h_input == 0:
 		h_move_timer = 0
+	#endregion
 
 func draw_wave() -> void: 
-	var j = player.position.x
+	var j = roundi(player.position.x)
 	vect_array.clear()
-	for x in range(j - 1200, j + 1201, 20):
+	for x in range(j - 1201, j + 1201, 10):
 		var i = Vector2(x, sin_func_math(x, a_var, b_var, c_var, d_var))
 		vect_array.append(i)
 	line.set_points(vect_array)
