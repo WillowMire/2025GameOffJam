@@ -7,15 +7,11 @@ class_name _ArcadeMain
 @export var sin_label : Label
 
 # GOAL
-# tune collision and movement to feel good
-#(idea, when touching wave, player shoots forward, perhaps figure out which direction its touching and adjust force angle)
-# add dynamic grid drawing system, so it looks like you're on a graph
-# learn and configure viewport, then adjust wave size depending on viewport
+# add dynamic grid drawing system, so it looks like you're on a graph, style it similar to desmos
+# add 0 enemy
 
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
-
-var sin_x_bounding_range : float
 
 @export var line : Line2D
 @export var vect_array : Array[Vector2]
@@ -27,6 +23,8 @@ var sin_x_bounding_range : float
 @export var min_control_speed : float
 @export var max_control_speed : float
 @export var v_move_curve : Curve
+@export var v_up_multiplier : float
+@export var v_down_multiplier : float
 @export var h_move_control_lerp_time : float
 
 func _ready() -> void:
@@ -41,6 +39,10 @@ func _ready() -> void:
 	start_sin_collision()
 	#poly_start_sin_collision()
 	update_sin_label()
+
+func _process(_delta: float) -> void:
+	if DEBUG:
+		$CanvasLayer/DEBUG/PlayerPos.text = "Pos:(" + str(roundi(player.global_position.x)) + ", " + str(roundi(player.global_position.y)) + ")" 
 
 #might change to _process if theres a problem
 func _physics_process(delta: float) -> void:
@@ -74,33 +76,27 @@ func start_sin_collision() -> void:
 		sin_collision_array.append(inst)
 
 func update_sin_collision() -> void:
+	#for i in vect_array.size() - 1:
+		#var _seg = SegmentShape2D.new()
+		#_seg.a = vect_array[i]
+		#_seg.b = vect_array[i+1]
+		#sin_collision_array[i].shape = _seg
+	
+	# this might be laggy ASF so maybe fix later tee hee
+	for child in $WaveCollision.get_children():
+		child.queue_free()
 	for i in vect_array.size() - 1:
+		var inst = CollisionShape2D.new()
 		var _seg = SegmentShape2D.new()
 		_seg.a = vect_array[i]
 		_seg.b = vect_array[i+1]
-		sin_collision_array[i].shape = _seg
-
-func poly_start_sin_collision() -> void:
-	var inst = CollisionPolygon2D.new()
-	inst.polygon.append(vect_array[0] + Vector2(0, 500))
-	for i in vect_array.size() - 1:
-		inst.polygon.append(vect_array[i])
-	inst.polygon.append(vect_array[vect_array.size() - 1] + Vector2(0, 500))
-	sin_collision_array.append(inst)
-	$WaveCollision.add_child(inst)
-
-func poly_update_sin_collision() -> void:
-	sin_collision_array[0].polygon.clear()
-	sin_collision_array[0].polygon.append(vect_array[0] + Vector2(0, 500))
-	for i in vect_array.size() - 1:
-		sin_collision_array[0].polygon.append(vect_array[i])
-	sin_collision_array[0].polygon.append(vect_array[vect_array.size() - 1] + Vector2(0, 500))
+		inst.shape = _seg
+		$WaveCollision.add_child(inst)
+		sin_collision_array.append(inst)
 
 var v_move_timer : float
 var h_move_timer : float
 var prev_v_input
-@export var v_up_multiplier : float
-@export var v_down_multiplier : float
 var initial_a : float
 var temp_cur_a : float
 var moving : bool
@@ -154,9 +150,13 @@ func move_wave_data(delta : float) -> void:
 	#endregion
 
 func draw_wave() -> void: 
-	var j = roundi(player.position.x)
+	var l = get_viewport().get_visible_rect().size.x * (1 / cam.zoom.x) / 2
+	var cent = cam.get_screen_center_position().x
+	#$"../Sprite2D".global_position.x = cam.get_screen_center_position().x - l / 2
+	#$"../Sprite2D2".global_position.x = cam.get_screen_center_position().x + l / 2
+	#var j = roundi(player.position.x)
 	vect_array.clear()
-	for x in range(j - 1201, j + 1201, 10):
+	for x in range(cent - l - 50, cent + l + 200, 10):
 		var i = Vector2(x, sin_func_math(x, a_var, b_var, c_var, d_var))
 		vect_array.append(i)
 	line.set_points(vect_array)
@@ -166,6 +166,11 @@ func sin_func_math(x : float, a : float, b : float, c : float, d : float) -> flo
 	var y
 	y = (a * -sin(b * (x + c))) + d
 	return y
+
+func sin_derivative_math(x : float, a = a_var, b = b_var, c = c_var) -> float:
+	var dydx
+	dydx = (a * b * -cos(b * (x + c)))
+	return dydx
 
 func _on_a_edit_text_submitted(new_text: String) -> void:
 	a_var = float(new_text)
