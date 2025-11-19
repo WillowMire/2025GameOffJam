@@ -1,11 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=14 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://scripts/arcade_main.gd" id="1_wer3u"]
 [ext_resource type="Script" uid="uid://u51sserba3tc" path="res://scripts/object_generation.gd" id="2_8hgfh"]
 [ext_resource type="Script" uid="uid://dltuvs015dqlb" path="res://scripts/cam_guide.gd" id="3_utn3h"]
 [ext_resource type="Script" uid="uid://11hk1me442cd" path="res://scripts/player_object.gd" id="4_cmngb"]
-[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="5_0ukt7"]
-[ext_resource type="Texture2D" uid="uid://ph1epmacmkby" path="res://grid_2.png" id="6_8hgfh"]
+[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://sprites/icon.svg" id="5_0ukt7"]
+[ext_resource type="Texture2D" uid="uid://ph1epmacmkby" path="res://sprites/grid_2.png" id="6_8hgfh"]
 
 [sub_resource type="Curve" id="Curve_658re"]
 _data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.09302327, 0.5617978), 2.604787, 2.604787, 0, 0, Vector2(0.36046514, 1), 0.0, 0.0, 0, 0]
@@ -19,10 +19,6 @@ absorbent = true
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8hgfh"]
 radius = 12.0
-
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_4ltp0"]
-friction = 0.0
-absorbent = true
 
 [sub_resource type="LabelSettings" id="LabelSettings_658re"]
 font_color = Color(0.17, 0.17, 0.17, 1)
@@ -85,9 +81,9 @@ contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("4_cmngb")
 game_node = NodePath("..")
-col_impulse_mult = 30.0
-col_force_mult = 20.0
-downhill_force_mult = 1.25
+col_impulse_mult = 45.0
+col_force_mult = 100.0
+downhill_force_mult = 1.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -114,7 +110,6 @@ default_color = Color(0.8, 0.32800004, 0.32800004, 1)
 [node name="WaveCollision" type="RigidBody2D" parent="."]
 position = Vector2(1, 0)
 collision_layer = 4
-physics_material_override = SubResource("PhysicsMaterial_4ltp0")
 gravity_scale = 0.0
 lock_rotation = true
 freeze = true
@@ -333,7 +328,6 @@ text = "Play Again
 "
 
 [node name="ParalaxBackgrounds" type="Node2D" parent="."]
-visible = false
 position = Vector2(574, 325)
 
 [node name="Parallax2D" type="Parallax2D" parent="ParalaxBackgrounds"]

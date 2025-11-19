@@ -10,7 +10,8 @@ var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
 
 @export var line : Line2D
-@export var vect_array : Array[Vector2]
+var visual_vect_array : Array[Vector2]
+var collision_vect_array : Array[Vector2]
 @export_group("Wave Variables")
 @export var a_var : float
 @export var b_var : float
@@ -28,6 +29,7 @@ func _ready() -> void:
 	initial_a = a_var
 	player.connect("game_end", end_game)
 	draw_wave()
+	draw_collision()
 	start_sin_collision()
 	#poly_start_sin_collision()
 	update_sin_label()
@@ -61,8 +63,8 @@ func _physics_process(delta: float) -> void:
 	if game_ended:
 		return
 	draw_wave()
-	update_sin_collision() #this may cause problems later, if so try making this and the draw function into lerps
-	#poly_update_sin_collision()
+	draw_collision()
+	update_sin_collision()
 	update_sin_label()
 
 func update_sin_label():
@@ -72,35 +74,42 @@ func update_sin_label():
 	var d = str(roundi(d_var))
 	sin_label.text = "f(x) = " + a + "Sin(" + b + "(x + " + c + ")) + " + d
 
+func draw_collision():
+	var _pos = player.global_position.x
+	collision_vect_array.clear()
+	for x in range(_pos - 50, _pos + 50, 5):
+		var i = Vector2(x, sin_func_math(x, a_var, b_var, c_var, d_var))
+		collision_vect_array.append(i)
+
 var sin_collision_array : Array[CollisionShape2D] #change to poly or normal depending on what sincollision im doing
 func start_sin_collision() -> void:
-	for i in vect_array.size() - 1:
+	for i in collision_vect_array.size() - 1:
 		var inst = CollisionShape2D.new()
 		var _seg = SegmentShape2D.new()
-		_seg.a = vect_array[i]
-		_seg.b = vect_array[i+1]
+		_seg.a = collision_vect_array[i]
+		_seg.b = collision_vect_array[i+1]
 		inst.shape = _seg
 		$WaveCollision.add_child(inst)
 		sin_collision_array.append(inst)
 
 func update_sin_collision() -> void:
+	for i in collision_vect_array.size() - 1:
+		var _seg = SegmentShape2D.new()
+		_seg.a = collision_vect_array[i]
+		_seg.b = collision_vect_array[i+1]
+		sin_collision_array[i].shape = _seg
+	
+	# this might be laggy ASF so maybe fix later tee hee
+	#for child in $WaveCollision.get_children():
+		#child.queue_free()
 	#for i in vect_array.size() - 1:
+		#var inst = CollisionShape2D.new()
 		#var _seg = SegmentShape2D.new()
 		#_seg.a = vect_array[i]
 		#_seg.b = vect_array[i+1]
-		#sin_collision_array[i].shape = _seg
-	
-	# this might be laggy ASF so maybe fix later tee hee
-	for child in $WaveCollision.get_children():
-		child.queue_free()
-	for i in vect_array.size() - 1:
-		var inst = CollisionShape2D.new()
-		var _seg = SegmentShape2D.new()
-		_seg.a = vect_array[i]
-		_seg.b = vect_array[i+1]
-		inst.shape = _seg
-		$WaveCollision.add_child(inst)
-		sin_collision_array.append(inst)
+		#inst.shape = _seg
+		#$WaveCollision.add_child(inst)
+		#sin_collision_array.append(inst)
 
 var v_move_timer : float
 var h_move_timer : float
@@ -167,11 +176,11 @@ func draw_wave(wave_type : String = "") -> void:
 	#$"../Sprite2D".global_position.x = cam.get_screen_center_position().x - l / 2
 	#$"../Sprite2D2".global_position.x = cam.get_screen_center_position().x + l / 2
 	#var j = roundi(player.position.x)
-	vect_array.clear()
+	visual_vect_array.clear()
 	for x in range(cent - l - 50, cent + l + 200, 10):
 		var i = Vector2(x, func_mult * sin_func_math(x, a_var, b_var, c_var, d_var))
-		vect_array.append(i)
-	line.set_points(vect_array)
+		visual_vect_array.append(i)
+	line.set_points(visual_vect_array)
 
 func sin_func_math(x : float, a : float, b : float, c : float, d : float) -> float:
 	# aSin(b(x+c))+d
