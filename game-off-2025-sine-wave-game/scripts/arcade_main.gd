@@ -6,10 +6,6 @@ class_name _ArcadeMain
 @export var cam : Camera2D
 @export var sin_label : Label
 
-# GOAL
-# add dynamic grid drawing system, so it looks like you're on a graph, style it similar to desmos
-# add 0 enemy
-
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
 
