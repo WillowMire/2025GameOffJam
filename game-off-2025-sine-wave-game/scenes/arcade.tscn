@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=13 format=3 uid="uid://c6uubfh172683"]
 
-[ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://arcade_main.gd" id="1_kjmcv"]
-[ext_resource type="Script" uid="uid://11hk1me442cd" path="res://player_object.gd" id="2_4ltp0"]
-[ext_resource type="Script" uid="uid://dltuvs015dqlb" path="res://cam_guide.gd" id="2_7sx8j"]
-[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="2_658re"]
+[ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://scripts/arcade_main.gd" id="1_wer3u"]
+[ext_resource type="Script" uid="uid://u51sserba3tc" path="res://scripts/object_generation.gd" id="2_8hgfh"]
+[ext_resource type="Script" uid="uid://dltuvs015dqlb" path="res://scripts/cam_guide.gd" id="3_utn3h"]
+[ext_resource type="Script" uid="uid://11hk1me442cd" path="res://scripts/player_object.gd" id="4_cmngb"]
+[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://icon.svg" id="5_0ukt7"]
 
 [sub_resource type="Curve" id="Curve_658re"]
 _data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.116279095, 0.516854), 2.604787, 2.604787, 0, 0, Vector2(0.50000006, 1), 0.0, 0.0, 0, 0]
@@ -11,7 +12,6 @@ point_count = 3
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
 friction = 0.0
-bounce = 1.0
 absorbent = true
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
@@ -28,11 +28,13 @@ outline_color = Color(0.7, 0.7, 0.7, 1)
 [sub_resource type="LabelSettings" id="LabelSettings_4ltp0"]
 font_color = Color(0, 0, 0, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_j7ds0"]
+font_size = 31
+
 [node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "sin_label", "line")]
-script = ExtResource("1_kjmcv")
-DEBUG = true
+script = ExtResource("1_wer3u")
 player = NodePath("PlayerObject")
-cam = NodePath("CamGuide/Camera2D")
+cam = NodePath("CamGuide/MainCam")
 sin_label = NodePath("CanvasLayer/SinFunc")
 line = NodePath("SinWave")
 a_var = 50.0
@@ -44,20 +46,31 @@ v_up_multiplier = 0.65
 v_down_multiplier = 1.75
 h_move_control_lerp_time = 1.0
 
-[node name="CamGuide" type="Node2D" parent="." node_paths=PackedStringArray("player", "cam")]
-position = Vector2(278, -169)
-script = ExtResource("2_7sx8j")
-player = NodePath("../PlayerObject")
-cam = NodePath("Camera2D")
+[node name="ObjectGeneration" type="Node2D" parent="." node_paths=PackedStringArray("cam")]
+script = ExtResource("2_8hgfh")
+cam = NodePath("../CamGuide/MainCam")
+y_spawn_range = Vector2(-100, -600)
+spawn_base_interval = 1.0
+interval_random_variance = 0.2
 
-[node name="Camera2D" type="Camera2D" parent="CamGuide"]
-offset = Vector2(200, 0)
+[node name="ZeroSpawn" type="Node2D" parent="ObjectGeneration"]
+
+[node name="CamGuide" type="Node2D" parent="." node_paths=PackedStringArray("game_node", "player", "cam")]
+position = Vector2(278, -169)
+script = ExtResource("3_utn3h")
+game_node = NodePath("..")
+player = NodePath("../PlayerObject")
+cam = NodePath("MainCam")
+
+[node name="MainCam" type="Camera2D" parent="CamGuide"]
+offset = Vector2(300, 0)
 limit_enabled = false
 position_smoothing_speed = 2.0
 drag_horizontal_enabled = true
 
 [node name="PlayerObject" type="RigidBody2D" parent="." node_paths=PackedStringArray("game_node")]
 position = Vector2(279, -364)
+collision_mask = 6
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_658re")
 gravity_scale = 0.5
@@ -65,9 +78,10 @@ lock_rotation = true
 continuous_cd = 1
 contact_monitor = true
 max_contacts_reported = 1
-script = ExtResource("2_4ltp0")
+script = ExtResource("4_cmngb")
 game_node = NodePath("..")
-col_force_mult = 95.0
+col_force_mult = 110.0
+downhill_force_mult = 1.5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -76,7 +90,7 @@ shape = SubResource("CircleShape2D_4ltp0")
 [node name="Sprite2D" type="Sprite2D" parent="PlayerObject"]
 z_index = 1
 scale = Vector2(0.16128054, 0.16128054)
-texture = ExtResource("2_658re")
+texture = ExtResource("5_0ukt7")
 region_rect = Rect2(3.105, 0, 115.895, 127.5)
 
 [node name="SinWave" type="Line2D" parent="."]
@@ -86,15 +100,16 @@ default_color = Color(0.86, 0.2064, 0.2064, 1)
 
 [node name="WaveCollision" type="RigidBody2D" parent="."]
 position = Vector2(1, 0)
+collision_layer = 4
 physics_material_override = SubResource("PhysicsMaterial_4ltp0")
 gravity_scale = 0.0
 lock_rotation = true
 freeze = true
-continuous_cd = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="SinFunc" type="Label" parent="CanvasLayer"]
+z_index = 2
 offset_left = 53.0
 offset_top = 48.0
 offset_right = 136.0
@@ -103,6 +118,8 @@ text = "f(x) = Asin(b(x+c))+d"
 label_settings = SubResource("LabelSettings_658re")
 
 [node name="DEBUG" type="Control" parent="CanvasLayer"]
+visible = false
+z_index = 5
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -230,6 +247,78 @@ grow_horizontal = 0
 text = "Pos: (x, y)"
 label_settings = SubResource("LabelSettings_4ltp0")
 
+[node name="EndGameScreen" type="Panel" parent="CanvasLayer"]
+z_index = -1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -576.0
+offset_right = 576.0
+offset_bottom = 648.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="GameOver" type="Label" parent="CanvasLayer/EndGameScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -89.0
+offset_top = 31.0
+offset_right = 89.0
+offset_bottom = 75.0
+grow_horizontal = 2
+text = "GAME OVER"
+label_settings = SubResource("LabelSettings_j7ds0")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Score" type="Label" parent="CanvasLayer/EndGameScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 105.0
+offset_right = 20.0
+offset_bottom = 128.0
+grow_horizontal = 2
+text = "Distance Traveled: ___m"
+horizontal_alignment = 1
+
+[node name="QuitToMenu" type="Button" parent="CanvasLayer/EndGameScreen"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -56.5
+offset_top = -109.0
+offset_right = 56.5
+offset_bottom = -78.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Quit To Menu
+"
+
+[node name="PlayAgain" type="Button" parent="CanvasLayer/EndGameScreen"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -166.0
+offset_right = 44.0
+offset_bottom = -135.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Play Again
+"
+
 [node name="y = 0" type="Line2D" parent="."]
 points = PackedVector2Array(0, 0, 775, 0, 622, -188)
 width = 5.0
@@ -242,3 +331,5 @@ default_color = Color(0, 0, 0, 1)
 [connection signal="text_submitted" from="CanvasLayer/DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
 [connection signal="text_submitted" from="CanvasLayer/DEBUG/C_Edit" to="." method="_on_c_edit_text_submitted"]
 [connection signal="text_submitted" from="CanvasLayer/DEBUG/D_Edit" to="." method="_on_d_edit_text_submitted"]
+[connection signal="pressed" from="CanvasLayer/EndGameScreen/QuitToMenu" to="." method="_on_quit_to_menu_pressed"]
+[connection signal="pressed" from="CanvasLayer/EndGameScreen/PlayAgain" to="." method="_on_play_again_pressed"]

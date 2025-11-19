@@ -1,11 +1,13 @@
 extends Node2D
 class_name _CamGuide
 
+@export var game_node : _ArcadeMain
 @export var player : _PlayerObject
 @export var cam : Camera2D
 @onready var initial_zoom : Vector2 = cam.zoom
 
 func _physics_process(_delta: float) -> void:
+	if game_node.game_ended: return
 	self.position = find_pos()
 	cam.zoom = find_zoom()
 
