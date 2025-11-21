@@ -10,8 +10,10 @@ class_name _ArcadeMain
 @export var obj_generator : _ObjectGeneration
 @export var sin_label : Label
 @export var score_label : Label
+@export var top_score_label: Label
 @export var dist_traveled_label : Label
 @export var player_start_node : Node2D
+@export var fx_controller : _FXController
 
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
@@ -35,6 +37,7 @@ var initial_d : float
 @export var v_down_multiplier : float
 @export var h_move_control_lerp_time : float
 var score : int : set = set_score
+var top_score : int : set = set_top_score
 var dist_traveled : int : set = set_dist_traveled
 var start_pos : float
 var running : bool
@@ -52,6 +55,10 @@ func set_score(value : int):
 	score_label.text = "Score: " + str(value)
 	score = value
 
+func set_top_score(value : int):
+	top_score_label.text = "Top Score: " + str(value)
+	top_score = value
+
 func calc_dist_traveled(distance : int) -> int:
 	#convert distance in pixels to whatever I want
 	@warning_ignore("integer_division")
@@ -65,6 +72,7 @@ func setup_ui():
 	$CanvasLayer/Score.visible = true
 	$CanvasLayer/DistanceTraveled.visible = true
 	$CanvasLayer/EndGameScreen.visible = false
+	$CanvasLayer/StartScreen.visible = true
 	if DEBUG:
 		$CanvasLayer/DEBUG.visible = true
 
@@ -200,6 +208,7 @@ func sin_derivative_math(x : float, a = a_var, b = b_var, c = c_var) -> float:
 
 func setup_game():
 	setup_ui()
+	top_score = _SaveLoad.save_contents.top_score
 	start_pos = player_start_node.global_position.x
 	score = 0
 	initial_a = a_var
@@ -220,28 +229,32 @@ func setup_game():
 func add_score(value : int):
 	if game_ended: return
 	score += value
+	fx_controller.inst_text_pop_up(player.global_position, "+ " + str(value))
 	print("added score: " + str(value))
 
 func start_game():
+	$CanvasLayer/StartScreen.visible = false
 	player.freeze = false
 	running = true
 
 func reset_game():
-	game_ended = false
-	a_var = initial_a
-	b_var = initial_b
-	c_var = initial_c
-	d_var = initial_d
-	setup_ui()
-	update_sin_label()
-	score = 0
-	obj_generator.despawn_all()
-	player.global_position = player_start_node.global_position
-	player.freeze = true
-	cam_guide.position = cam_guide.find_pos()
-	cam.zoom = cam_guide.find_zoom()
-	draw_wave()
-	running = false
+	pass
+	#save data
+	#game_ended = false
+	#a_var = initial_a
+	#b_var = initial_b
+	#c_var = initial_c
+	#d_var = initial_d
+	#setup_ui()
+	#update_sin_label()
+	#score = 0
+	#obj_generator.despawn_all()
+	#player.global_position = player_start_node.global_position
+	#player.freeze = true
+	#cam_guide.position = cam_guide.find_pos()
+	#cam.zoom = cam_guide.find_zoom()
+	#draw_wave()
+	#running = false
 
 var game_ended : bool = false
 func end_game(end_type : String):
@@ -251,14 +264,24 @@ func end_game(end_type : String):
 			sin_label.text = "f(x) = 0"
 			draw_wave("zero")
 			update_sin_collision()
+	save_top_score()
 	$CanvasLayer/Score.visible = false
 	$CanvasLayer/DistanceTraveled.visible = false
 	$CanvasLayer/EndGameScreen/DistanceTraveled.text = "Distance Traveled: " + str(dist_traveled) + "m"
 	$CanvasLayer/EndGameScreen/Score.text = "Score: " + str(score)
 	$CanvasLayer/EndGameScreen.visible = true
 
+func save_top_score():
+	if score > _SaveLoad.save_contents.top_score:
+		_SaveLoad.save_contents.top_score = score
+		_SaveLoad._save()
+
+func load_data():
+	_SaveLoad._load()
+	top_score = _SaveLoad.save_contents.top_score
+
 func _on_play_again_pressed() -> void:
-	reset_game()
+	get_tree().reload_current_scene()
 
 
 func _on_quit_to_menu_pressed() -> void:

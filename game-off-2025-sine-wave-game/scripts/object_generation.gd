@@ -9,9 +9,11 @@ var zero_enem = preload("res://objects/zero_enemy.tscn")
 @export var spawn_base_interval : float
 @export var interval_random_variance : float
 
-func _process(delta: float) -> void:
+func _ready() -> void:
 	if spawn_base_interval - interval_random_variance < 0:
-		push_error("timer can be negative, make sure interval_random_variance is less than spawn_base_interval")
+		push_error("timer cant be negative, make sure interval_random_variance is less than spawn_base_interval")
+
+func _physics_process(delta: float) -> void:
 	if !game_node.running: return
 	spawner(delta)
 	despawner()

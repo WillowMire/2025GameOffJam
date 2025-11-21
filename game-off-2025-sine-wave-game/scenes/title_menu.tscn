@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ij6cu")
 
-[node name="Label" type="Label" parent="."]
+[node name="Title" type="Label" parent="."]
 layout_mode = 1
 offset_left = 35.0
 offset_top = 29.0
@@ -35,6 +35,18 @@ offset_right = 77.0
 offset_bottom = 574.0
 text = "Quit
 "
+
+[node name="TopScore" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -125.0
+offset_top = 29.0
+offset_right = -85.0
+offset_bottom = 52.0
+grow_horizontal = 0
+text = "Top Score: _"
 
 [connection signal="pressed" from="Play" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]

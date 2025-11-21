@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://cmhfhy455rxlw"]
+
+[ext_resource type="Script" uid="uid://d22j1vykbdf5w" path="res://scripts/text_pop_up.gd" id="1_2h1dq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2h1dq"]
+font_size = 32
+font_color = Color(0.06, 0.06, 0.06, 1)
+
+[node name="TextPopUp" type="Node2D"]
+script = ExtResource("1_2h1dq")
+alive_time = 0.8
+vertical_speed = 50.0
+horizontal_speed = 25.0
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "_"
+label_settings = SubResource("LabelSettings_2h1dq")
+horizontal_alignment = 1
+vertical_alignment = 1

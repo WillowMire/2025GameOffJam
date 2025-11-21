@@ -7,7 +7,7 @@
 radius = 17.75
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6aqg1"]
-radius = 70.0
+radius = 86.15
 
 [node name="ZeroEnemy" type="Area2D"]
 collision_layer = 2

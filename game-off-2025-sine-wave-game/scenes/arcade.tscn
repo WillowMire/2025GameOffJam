@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=15 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://scripts/arcade_main.gd" id="1_wer3u"]
 [ext_resource type="Script" uid="uid://u51sserba3tc" path="res://scripts/object_generation.gd" id="2_8hgfh"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://11hk1me442cd" path="res://scripts/player_object.gd" id="4_cmngb"]
 [ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://sprites/icon.svg" id="5_0ukt7"]
 [ext_resource type="Texture2D" uid="uid://ph1epmacmkby" path="res://sprites/grid_2.png" id="6_8hgfh"]
+[ext_resource type="Script" uid="uid://bqeqeb3snc5k1" path="res://scripts/fx_controller.gd" id="7_utn3h"]
 
 [sub_resource type="Curve" id="Curve_658re"]
 _data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.09302327, 0.5617978), 2.604787, 2.604787, 0, 0, Vector2(0.36046514, 1), 0.0, 0.0, 0, 0]
@@ -13,6 +14,7 @@ point_count = 3
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
 friction = 0.0
+bounce = 0.1
 absorbent = true
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
@@ -31,7 +33,7 @@ font_color = Color(0, 0, 0, 1)
 [sub_resource type="LabelSettings" id="LabelSettings_j7ds0"]
 font_size = 31
 
-[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam_guide", "cam", "obj_generator", "sin_label", "score_label", "dist_traveled_label", "player_start_node", "line")]
+[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam_guide", "cam", "obj_generator", "sin_label", "score_label", "top_score_label", "dist_traveled_label", "player_start_node", "fx_controller", "line")]
 script = ExtResource("1_wer3u")
 player = NodePath("PlayerObject")
 cam_guide = NodePath("CamGuide")
@@ -39,8 +41,10 @@ cam = NodePath("CamGuide/MainCam")
 obj_generator = NodePath("ObjectGeneration")
 sin_label = NodePath("CanvasLayer/SinFunc")
 score_label = NodePath("CanvasLayer/Score")
+top_score_label = NodePath("CanvasLayer/TopScore")
 dist_traveled_label = NodePath("CanvasLayer/DistanceTraveled")
 player_start_node = NodePath("InitialPlayerPosition")
+fx_controller = NodePath("FXController")
 line = NodePath("SinWave")
 a_var = 100.0
 b_var = 0.008
@@ -74,7 +78,7 @@ cam = NodePath("MainCam")
 
 [node name="MainCam" type="Camera2D" parent="CamGuide"]
 offset = Vector2(300, 0)
-zoom = Vector2(0.655, 0.655)
+zoom = Vector2(0.575, 0.575)
 limit_enabled = false
 position_smoothing_speed = 2.0
 drag_horizontal_enabled = true
@@ -91,9 +95,9 @@ contact_monitor = true
 max_contacts_reported = 1
 script = ExtResource("4_cmngb")
 game_node = NodePath("..")
-col_impulse_mult = 45.0
-col_force_mult = 100.0
-downhill_force_mult = 1.5
+col_impulse_mult = 90.0
+col_force_mult = 150.0
+downhill_force_mult = 1.2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -123,6 +127,7 @@ collision_layer = 4
 gravity_scale = 0.0
 lock_rotation = true
 freeze = true
+continuous_cd = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -145,6 +150,17 @@ offset_right = -165.0
 offset_bottom = 98.0
 grow_horizontal = 0
 text = "Score: _"
+
+[node name="TopScore" type="Label" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -224.0
+offset_top = 105.0
+offset_right = -132.0
+offset_bottom = 128.0
+grow_horizontal = 0
+text = "Top Score: _"
 
 [node name="DistanceTraveled" type="Label" parent="CanvasLayer"]
 anchors_preset = 1
@@ -289,6 +305,28 @@ grow_vertical = 0
 text = "Play Again
 "
 
+[node name="StartScreen" type="Panel" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/StartScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Press Any Key to Start"
+
 [node name="ParalaxBackgrounds" type="Node2D" parent="."]
 position = Vector2(574, 325)
 
@@ -296,7 +334,7 @@ position = Vector2(574, 325)
 z_index = -5
 scale = Vector2(2, 2)
 repeat_size = Vector2(100, 100)
-repeat_times = 15
+repeat_times = 30
 
 [node name="Sprite2D" type="Sprite2D" parent="ParalaxBackgrounds/Parallax2D"]
 modulate = Color(0.4, 0.4, 0.4, 1)
@@ -308,11 +346,16 @@ scale = Vector2(0.5, 0.5)
 scroll_scale = Vector2(0.4, 0.4)
 scroll_offset = Vector2(-111, -11)
 repeat_size = Vector2(100, 100)
-repeat_times = 60
+repeat_times = 100
 
 [node name="Sprite2D" type="Sprite2D" parent="ParalaxBackgrounds/Parallax2D2"]
 modulate = Color(0.61, 0.61, 0.61, 1)
 texture = ExtResource("6_8hgfh")
+
+[node name="FXController" type="Node" parent="."]
+script = ExtResource("7_utn3h")
+
+[node name="TextPopUps" type="Node" parent="FXController"]
 
 [connection signal="body_entered" from="PlayerObject" to="PlayerObject" method="_on_body_entered"]
 [connection signal="body_entered" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_entered"]
