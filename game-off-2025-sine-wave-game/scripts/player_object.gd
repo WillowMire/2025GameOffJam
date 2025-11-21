@@ -7,9 +7,12 @@ class_name _PlayerObject
 @export var downhill_force_mult : float
 var collided : bool
 var col_timer : float
+@onready var initial_grav : float = self.gravity_scale
 
 @warning_ignore("unused_signal")
 signal game_end(end_type_name : String)
+@warning_ignore("unused_signal")
+signal gained_score(amount : int)
 
 func _process(delta: float) -> void:
 	if game_node.game_ended: 
@@ -55,4 +58,5 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 
 func _on_area_2d_body_exited(body: Node2D) -> void:
-	collided = false
+	if body.name == "WaveCollision":
+		collided = false

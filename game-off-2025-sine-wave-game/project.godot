@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="GameOff2025-SineWaveGame"
-run/main_scene="uid://c6uubfh172683"
+run/main_scene="uid://jl7gul5xihvr"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 config/icon="res://sprites/icon.svg"
 

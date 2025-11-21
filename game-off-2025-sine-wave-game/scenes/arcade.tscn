@@ -31,26 +31,36 @@ font_color = Color(0, 0, 0, 1)
 [sub_resource type="LabelSettings" id="LabelSettings_j7ds0"]
 font_size = 31
 
-[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam", "sin_label", "line")]
+[node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam_guide", "cam", "obj_generator", "sin_label", "score_label", "dist_traveled_label", "player_start_node", "line")]
 script = ExtResource("1_wer3u")
 player = NodePath("PlayerObject")
+cam_guide = NodePath("CamGuide")
 cam = NodePath("CamGuide/MainCam")
+obj_generator = NodePath("ObjectGeneration")
 sin_label = NodePath("CanvasLayer/SinFunc")
+score_label = NodePath("CanvasLayer/Score")
+dist_traveled_label = NodePath("CanvasLayer/DistanceTraveled")
+player_start_node = NodePath("InitialPlayerPosition")
 line = NodePath("SinWave")
-a_var = 50.0
-b_var = 0.015
-min_control_speed = 200.0
-max_control_speed = 250.0
+a_var = 100.0
+b_var = 0.008
+min_control_speed = 100.0
+max_control_speed = 150.0
 v_move_curve = SubResource("Curve_658re")
 v_up_multiplier = 0.3
 v_down_multiplier = 1.8
 h_move_control_lerp_time = 0.5
 
-[node name="ObjectGeneration" type="Node2D" parent="." node_paths=PackedStringArray("cam")]
+[node name="InitialPlayerPosition" type="Node2D" parent="."]
+position = Vector2(0, -285)
+
+[node name="ObjectGeneration" type="Node2D" parent="." node_paths=PackedStringArray("game_node", "cam")]
 script = ExtResource("2_8hgfh")
+game_node = NodePath("..")
 cam = NodePath("../CamGuide/MainCam")
-y_spawn_range = Vector2(150, -600)
-spawn_base_interval = 1.0
+max_spawn_y = -600.0
+min_spawn_y = 150.0
+spawn_base_interval = 0.9
 interval_random_variance = 0.2
 
 [node name="ZeroSpawn" type="Node2D" parent="ObjectGeneration"]
@@ -103,7 +113,7 @@ shape = SubResource("CircleShape2D_8hgfh")
 debug_color = Color(0.66528, 0.5147997, 1.92523e-07, 0.41960785)
 
 [node name="SinWave" type="Line2D" parent="."]
-points = PackedVector2Array(0, 0, 1153, 0)
+points = PackedVector2Array(-26, 0, 178, 0)
 width = 7.625
 default_color = Color(0.8, 0.32800004, 0.32800004, 1)
 
@@ -125,6 +135,28 @@ offset_bottom = 131.0
 text = "f(x) = Asin(b(x+c))+d"
 label_settings = SubResource("LabelSettings_658re")
 
+[node name="Score" type="Label" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -224.0
+offset_top = 75.0
+offset_right = -165.0
+offset_bottom = 98.0
+grow_horizontal = 0
+text = "Score: _"
+
+[node name="DistanceTraveled" type="Label" parent="CanvasLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -224.0
+offset_top = 48.0
+offset_right = -55.0
+offset_bottom = 71.0
+grow_horizontal = 0
+text = "Distance Traveled: _m"
+
 [node name="DEBUG" type="Control" parent="CanvasLayer"]
 visible = false
 z_index = 5
@@ -143,91 +175,8 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="A_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 22.0
-offset_top = 7.0
-offset_right = 90.5625
-offset_bottom = 38.0
-metadata/_edit_use_anchors_ = true
-
-[node name="B_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 115.0
-offset_top = 6.0
-offset_right = 183.5625
-offset_bottom = 37.0
-metadata/_edit_use_anchors_ = true
-
-[node name="C_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 213.0
-offset_top = 7.0
-offset_right = 281.5625
-offset_bottom = 38.0
-metadata/_edit_use_anchors_ = true
-
-[node name="D_Edit" type="LineEdit" parent="CanvasLayer/DEBUG"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.525
-anchor_top = 0.175
-anchor_right = 1.525
-anchor_bottom = 0.175
-offset_left = 307.0
-offset_top = 6.0
-offset_right = 375.5625
-offset_bottom = 37.0
-metadata/_edit_use_anchors_ = true
-
-[node name="A" type="Label" parent="CanvasLayer/DEBUG"]
-layout_mode = 0
-offset_left = 59.0
-offset_top = 20.0
-offset_right = 99.0
-offset_bottom = 43.0
-text = "A"
-
-[node name="B" type="Label" parent="CanvasLayer/DEBUG"]
-layout_mode = 0
-offset_left = 157.0
-offset_top = 20.0
-offset_right = 197.0
-offset_bottom = 43.0
-text = "B"
-
-[node name="C" type="Label" parent="CanvasLayer/DEBUG"]
-layout_mode = 0
-offset_left = 253.0
-offset_top = 18.0
-offset_right = 293.0
-offset_bottom = 41.0
-text = "C"
-
-[node name="D" type="Label" parent="CanvasLayer/DEBUG"]
-layout_mode = 0
-offset_left = 351.0
-offset_top = 16.0
-offset_right = 391.0
-offset_bottom = 39.0
-text = "D"
-
 [node name="Get slope" type="LineEdit" parent="CanvasLayer/DEBUG"]
+z_index = 5
 layout_mode = 0
 offset_left = 581.0
 offset_top = 17.0
@@ -292,7 +241,20 @@ offset_top = 105.0
 offset_right = 20.0
 offset_bottom = 128.0
 grow_horizontal = 2
-text = "Distance Traveled: ___m"
+text = "Score: __"
+horizontal_alignment = 1
+
+[node name="DistanceTraveled" type="Label" parent="CanvasLayer/EndGameScreen"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -109.0
+offset_top = 132.0
+offset_right = 109.0
+offset_bottom = 155.0
+grow_horizontal = 2
+text = "Distance Traveled: _m"
 horizontal_alignment = 1
 
 [node name="QuitToMenu" type="Button" parent="CanvasLayer/EndGameScreen"]
@@ -355,9 +317,5 @@ texture = ExtResource("6_8hgfh")
 [connection signal="body_entered" from="PlayerObject" to="PlayerObject" method="_on_body_entered"]
 [connection signal="body_entered" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_exited"]
-[connection signal="text_submitted" from="CanvasLayer/DEBUG/A_Edit" to="." method="_on_a_edit_text_submitted"]
-[connection signal="text_submitted" from="CanvasLayer/DEBUG/B_Edit" to="." method="_on_b_edit_text_submitted"]
-[connection signal="text_submitted" from="CanvasLayer/DEBUG/C_Edit" to="." method="_on_c_edit_text_submitted"]
-[connection signal="text_submitted" from="CanvasLayer/DEBUG/D_Edit" to="." method="_on_d_edit_text_submitted"]
 [connection signal="pressed" from="CanvasLayer/EndGameScreen/QuitToMenu" to="." method="_on_quit_to_menu_pressed"]
 [connection signal="pressed" from="CanvasLayer/EndGameScreen/PlayAgain" to="." method="_on_play_again_pressed"]

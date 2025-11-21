@@ -2,9 +2,16 @@ extends Node2D
 class_name _ArcadeMain
 
 @export var DEBUG : bool
+
+@export_group("Nodes")
 @export var player : RigidBody2D
+@export var cam_guide : _CamGuide
 @export var cam : Camera2D
+@export var obj_generator : _ObjectGeneration
 @export var sin_label : Label
+@export var score_label : Label
+@export var dist_traveled_label : Label
+@export var player_start_node : Node2D
 
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
@@ -14,51 +21,65 @@ var visual_vect_array : Array[Vector2]
 var collision_vect_array : Array[Vector2]
 @export_group("Wave Variables")
 @export var a_var : float
+var initial_a : float
 @export var b_var : float
+var initial_b : float
 @export var c_var : float
+var initial_c : float
 @export var d_var : float
+var initial_d : float
 @export var min_control_speed : float
 @export var max_control_speed : float
 @export var v_move_curve : Curve
 @export var v_up_multiplier : float
 @export var v_down_multiplier : float
 @export var h_move_control_lerp_time : float
+var score : int : set = set_score
+var dist_traveled : int : set = set_dist_traveled
+var start_pos : float
+var running : bool
+
+var prev_dist_traveled
+func set_dist_traveled(value : int):
+	dist_traveled_label.text = "Distance Traveled: " + str(value) + "m"
+	dist_traveled = value
+	if value == 0: return
+	if value%10 == 0 && value != prev_dist_traveled:
+		add_score(1)
+	prev_dist_traveled = value
+
+func set_score(value : int):
+	score_label.text = "Score: " + str(value)
+	score = value
+
+func calc_dist_traveled(distance : int) -> int:
+	#convert distance in pixels to whatever I want
+	@warning_ignore("integer_division")
+	var dist = roundi(distance / 200)
+	return dist
 
 func _ready() -> void:
-	setup_ui()
-	initial_a = a_var
-	player.connect("game_end", end_game)
-	draw_wave()
-	draw_collision()
-	start_sin_collision()
-	#poly_start_sin_collision()
-	update_sin_label()
+	setup_game()
 
 func setup_ui():
+	$CanvasLayer/Score.visible = true
+	$CanvasLayer/DistanceTraveled.visible = true
 	$CanvasLayer/EndGameScreen.visible = false
 	if DEBUG:
 		$CanvasLayer/DEBUG.visible = true
-		$CanvasLayer/DEBUG/A_Edit.text = str(a_var)
-		$CanvasLayer/DEBUG/B_Edit.text = str(b_var)
-		$CanvasLayer/DEBUG/C_Edit.text = str(c_var)
-		$CanvasLayer/DEBUG/D_Edit.text = str(d_var)
-
-var game_ended : bool = false
-func end_game(end_type : String):
-	match end_type:
-		"zero": 
-			game_ended = true
-			sin_label.text = "f(x) = 0"
-			draw_wave("zero")
-			update_sin_collision()
-	$CanvasLayer/EndGameScreen.visible = true
 
 func _process(_delta: float) -> void:
 	if DEBUG:
 		$CanvasLayer/DEBUG/PlayerPos.text = "Pos:(" + str(roundi(player.global_position.x)) + ", " + str(roundi(player.global_position.y)) + ")" 
+	if game_ended: return
+	@warning_ignore("narrowing_conversion")
+	set_dist_traveled(calc_dist_traveled(player.global_position.x - start_pos))
 
-#might change to _process if theres a problem
 func _physics_process(delta: float) -> void:
+	if !running: 
+		if Input.is_anything_pressed():
+			start_game()
+		return
 	move_wave_data(delta) # controls wave by changing variables before 
 	if game_ended:
 		return
@@ -77,7 +98,7 @@ func update_sin_label():
 func draw_collision():
 	var _pos = player.global_position.x
 	collision_vect_array.clear()
-	for x in range(_pos - 50, _pos + 50, 5):
+	for x in range(_pos - 50, _pos + 50, 2):
 		var i = Vector2(x, sin_func_math(x, a_var, b_var, c_var, d_var))
 		collision_vect_array.append(i)
 
@@ -98,23 +119,10 @@ func update_sin_collision() -> void:
 		_seg.a = collision_vect_array[i]
 		_seg.b = collision_vect_array[i+1]
 		sin_collision_array[i].shape = _seg
-	
-	# this might be laggy ASF so maybe fix later tee hee
-	#for child in $WaveCollision.get_children():
-		#child.queue_free()
-	#for i in vect_array.size() - 1:
-		#var inst = CollisionShape2D.new()
-		#var _seg = SegmentShape2D.new()
-		#_seg.a = vect_array[i]
-		#_seg.b = vect_array[i+1]
-		#inst.shape = _seg
-		#$WaveCollision.add_child(inst)
-		#sin_collision_array.append(inst)
 
 var v_move_timer : float
 var h_move_timer : float
 var prev_v_input
-var initial_a : float
 var temp_cur_a : float
 var moving : bool
 var prev_moving : bool
@@ -173,9 +181,6 @@ func draw_wave(wave_type : String = "") -> void:
 		"zero": func_mult = 0
 	var l = get_viewport().get_visible_rect().size.x * (1 / cam.zoom.x) / 2
 	var cent = cam.get_screen_center_position().x
-	#$"../Sprite2D".global_position.x = cam.get_screen_center_position().x - l / 2
-	#$"../Sprite2D2".global_position.x = cam.get_screen_center_position().x + l / 2
-	#var j = roundi(player.position.x)
 	visual_vect_array.clear()
 	for x in range(cent - l - 50, cent + l + 200, 10):
 		var i = Vector2(x, func_mult * sin_func_math(x, a_var, b_var, c_var, d_var))
@@ -193,9 +198,67 @@ func sin_derivative_math(x : float, a = a_var, b = b_var, c = c_var) -> float:
 	dydx = (a * b * -cos(b * (x + c)))
 	return dydx
 
+func setup_game():
+	setup_ui()
+	start_pos = player_start_node.global_position.x
+	score = 0
+	initial_a = a_var
+	initial_b = b_var
+	initial_c = c_var
+	initial_d = d_var
+	player.connect("game_end", end_game)
+	player.connect("gained_score", add_score)
+	draw_wave()
+	draw_collision()
+	start_sin_collision()
+	update_sin_label()
+	
+	player.global_position = player_start_node.global_position
+	player.freeze = true
+	running = false
+
+func add_score(value : int):
+	if game_ended: return
+	score += value
+	print("added score: " + str(value))
+
+func start_game():
+	player.freeze = false
+	running = true
+
+func reset_game():
+	game_ended = false
+	a_var = initial_a
+	b_var = initial_b
+	c_var = initial_c
+	d_var = initial_d
+	setup_ui()
+	update_sin_label()
+	score = 0
+	obj_generator.despawn_all()
+	player.global_position = player_start_node.global_position
+	player.freeze = true
+	cam_guide.position = cam_guide.find_pos()
+	cam.zoom = cam_guide.find_zoom()
+	draw_wave()
+	running = false
+
+var game_ended : bool = false
+func end_game(end_type : String):
+	match end_type:
+		"zero": 
+			game_ended = true
+			sin_label.text = "f(x) = 0"
+			draw_wave("zero")
+			update_sin_collision()
+	$CanvasLayer/Score.visible = false
+	$CanvasLayer/DistanceTraveled.visible = false
+	$CanvasLayer/EndGameScreen/DistanceTraveled.text = "Distance Traveled: " + str(dist_traveled) + "m"
+	$CanvasLayer/EndGameScreen/Score.text = "Score: " + str(score)
+	$CanvasLayer/EndGameScreen.visible = true
 
 func _on_play_again_pressed() -> void:
-	pass # reset scene, and whatever that entails
+	reset_game()
 
 
 func _on_quit_to_menu_pressed() -> void:

@@ -19,7 +19,7 @@ offset_right = 75.0
 offset_bottom = 52.0
 text = "SinGame"
 
-[node name="Button" type="Button" parent="."]
+[node name="Play" type="Button" parent="."]
 layout_mode = 0
 offset_left = 35.0
 offset_top = 69.0
@@ -27,4 +27,14 @@ offset_right = 76.0
 offset_bottom = 100.0
 text = "Play"
 
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[node name="Quit" type="Button" parent="."]
+layout_mode = 0
+offset_left = 35.0
+offset_top = 543.0
+offset_right = 77.0
+offset_bottom = 574.0
+text = "Quit
+"
+
+[connection signal="pressed" from="Play" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]

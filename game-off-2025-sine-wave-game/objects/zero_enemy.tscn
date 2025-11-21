@@ -1,10 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://qmlcghvkiyd8"]
+[gd_scene load_steps=5 format=3 uid="uid://qmlcghvkiyd8"]
 
 [ext_resource type="Script" uid="uid://bhaewonj527ai" path="res://scripts/enem.gd" id="1_6aqg1"]
 [ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://sprites/icon.svg" id="2_h3yvs"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6e0rv"]
 radius = 17.75
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6aqg1"]
+radius = 70.0
 
 [node name="ZeroEnemy" type="Area2D"]
 collision_layer = 2
@@ -20,5 +23,12 @@ modulate = Color(1, 0.61, 0.61, 1)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_h3yvs")
 
+[node name="CloseCall" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CloseCall"]
+shape = SubResource("CircleShape2D_6aqg1")
+debug_color = Color(1, 0, 0.016666412, 0)
+
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="CloseCall" to="." method="_on_close_call_body_exited"]
