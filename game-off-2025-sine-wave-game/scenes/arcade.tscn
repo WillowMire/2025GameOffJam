@@ -9,18 +9,16 @@
 [ext_resource type="Script" uid="uid://bqeqeb3snc5k1" path="res://scripts/fx_controller.gd" id="7_utn3h"]
 
 [sub_resource type="Curve" id="Curve_658re"]
-_data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.09302327, 0.5617978), 2.604787, 2.604787, 0, 0, Vector2(0.36046514, 1), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.107382566, 0.6629214), 2.604787, 2.604787, 0, 0, Vector2(0.4362416, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
 friction = 0.0
-bounce = 0.1
-absorbent = true
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_4ltp0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8hgfh"]
-radius = 12.0
+radius = 22.0
 
 [sub_resource type="LabelSettings" id="LabelSettings_658re"]
 font_color = Color(0.17, 0.17, 0.17, 1)
@@ -35,6 +33,7 @@ font_size = 31
 
 [node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam_guide", "cam", "obj_generator", "sin_label", "score_label", "top_score_label", "dist_traveled_label", "player_start_node", "fx_controller", "line")]
 script = ExtResource("1_wer3u")
+DEBUG = true
 player = NodePath("PlayerObject")
 cam_guide = NodePath("CamGuide")
 cam = NodePath("CamGuide/MainCam")
@@ -51,21 +50,21 @@ b_var = 0.008
 min_control_speed = 100.0
 max_control_speed = 150.0
 v_move_curve = SubResource("Curve_658re")
-v_up_multiplier = 0.3
-v_down_multiplier = 1.8
+v_up_multiplier = 0.45
+v_down_multiplier = 1.6
 h_move_control_lerp_time = 0.5
 
 [node name="InitialPlayerPosition" type="Node2D" parent="."]
 position = Vector2(0, -285)
 
-[node name="ObjectGeneration" type="Node2D" parent="." node_paths=PackedStringArray("game_node", "cam")]
+[node name="ObjectGeneration" type="Node2D" parent="." node_paths=PackedStringArray("game_node", "cam", "player")]
 script = ExtResource("2_8hgfh")
 game_node = NodePath("..")
 cam = NodePath("../CamGuide/MainCam")
-max_spawn_y = -600.0
-min_spawn_y = 150.0
-spawn_base_interval = 0.9
-interval_random_variance = 0.2
+player = NodePath("../PlayerObject")
+spawn_separation_dist = 1400
+max_spawn_y = -1300.0
+min_spawn_y = 100.0
 
 [node name="ZeroSpawn" type="Node2D" parent="ObjectGeneration"]
 
@@ -85,19 +84,21 @@ drag_horizontal_enabled = true
 
 [node name="PlayerObject" type="RigidBody2D" parent="." node_paths=PackedStringArray("game_node")]
 position = Vector2(279, -364)
-collision_mask = 6
+collision_mask = 2
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_658re")
-gravity_scale = 0.5
+gravity_scale = 0.6
 lock_rotation = true
 continuous_cd = 1
 contact_monitor = true
-max_contacts_reported = 1
+max_contacts_reported = 3
 script = ExtResource("4_cmngb")
 game_node = NodePath("..")
-col_impulse_mult = 90.0
-col_force_mult = 150.0
-downhill_force_mult = 1.2
+col_impulse_mult = 70.0
+col_force_mult = 130.0
+downhill_force_mult = 1.4
+max_velocity = 1200.0
+rebound_force = 22.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject"]
 z_index = 2
@@ -110,6 +111,7 @@ texture = ExtResource("5_0ukt7")
 region_rect = Rect2(3.105, 0, 115.895, 127.5)
 
 [node name="Area2D" type="Area2D" parent="PlayerObject"]
+collision_layer = 0
 collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerObject/Area2D"]
@@ -357,7 +359,6 @@ script = ExtResource("7_utn3h")
 
 [node name="TextPopUps" type="Node" parent="FXController"]
 
-[connection signal="body_entered" from="PlayerObject" to="PlayerObject" method="_on_body_entered"]
 [connection signal="body_entered" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_exited"]
 [connection signal="pressed" from="CanvasLayer/EndGameScreen/QuitToMenu" to="." method="_on_quit_to_menu_pressed"]

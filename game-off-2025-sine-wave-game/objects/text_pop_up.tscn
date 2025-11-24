@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://d22j1vykbdf5w" path="res://scripts/text_pop_up.gd" id="1_2h1dq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_2h1dq"]
-font_size = 32
-font_color = Color(0.06, 0.06, 0.06, 1)
+font_size = 64
+font_color = Color(0, 0.7607843, 0.36862746, 1)
 
 [node name="TextPopUp" type="Node2D"]
 script = ExtResource("1_2h1dq")

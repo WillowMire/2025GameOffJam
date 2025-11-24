@@ -8,48 +8,70 @@ class_name _PlayerObject
 var collided : bool
 var col_timer : float
 @onready var initial_grav : float = self.gravity_scale
+@export var max_velocity : float
+@export var rebound_force : float
 
 @warning_ignore("unused_signal")
 signal game_end(end_type_name : String)
 @warning_ignore("unused_signal")
 signal gained_score(amount : int)
 
-func _process(delta: float) -> void:
-	if game_node.game_ended: 
-		self.physics_material_override.absorbent = false
-		self.physics_material_override.friction = 0.5
+func _physics_process(_delta: float) -> void:
+	if game_node.game_ended: return
 	if collided:
 		var d = 1
 		var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
 		if dir.y > 0:
 			d = downhill_force_mult
 		self.apply_central_force(dir.normalized() * col_force_mult * d)
-	col_timer -= delta
-	if col_timer < 0:
-		collided = false
+	
+	if is_player_below_wave():
+		snap_player_above_wave()
+		revert_vel()
+		print("is snappy bitch")
+		is_snapped = true
+	
+	check_player_at_crest()
+	
+	if self.linear_velocity.length() > max_velocity:
+		var opp = self.linear_velocity.orthogonal().orthogonal()
+		self.apply_central_force(opp.normalized() * rebound_force)
+	
+	prev_vel = self.linear_velocity
 
-func _on_body_entered(body: Node) -> void:
-	if game_node.game_ended: return
-	# enemy detection
-	if body.get_collision_layer() == 2:
-		print("col_enem")
-	# wave detection
-	#if collided: pass #do this for animation
-	#collided = true
-	#col_timer = 1
-	#if body.name == "WaveCollision":
-		#var d = 1
-		#var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
-		#if dir.y > 0:
-			#d = downhill_force_mult
-		#self.apply_central_impulse(dir.normalized() * col_impulse_mult * d)
+@export var clipping_forgiveness : float
+func is_player_below_wave() -> bool:
+	var y_off = $CollisionShape2D.shape.radius
+	var y_wave = game_node.sin_func_math(self.global_position.x)
+	if self.global_position.y > (y_wave - y_off + clipping_forgiveness): 
+		return true
+	else: return false
 
+func snap_player_above_wave():
+	var y_off = $CollisionShape2D.shape.radius
+	var y_wave = game_node.sin_func_math(self.global_position.x)
+	var normal = Vector2(1, game_node.sin_derivative_math(self.global_position.x)).normalized().orthogonal()
+	self.global_position = Vector2(self.global_position.x, y_wave + (normal.y * 2 * y_off))
+
+var prev_vel : Vector2
+func revert_vel():
+	var dir_der = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
+	self.linear_velocity = dir_der.normalized() * prev_vel.length()
+
+var is_snapped : bool = false
+func check_player_at_crest():
+	var deriv = game_node.sin_derivative_math(self.global_position.x)
+	if deriv < 0.3 && -0.6 < deriv:
+		is_snapped = false
+		return
+	if is_snapped:
+		snap_player_above_wave()
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if collided: pass #do this for animation
 	collided = true
-	col_timer = 1
 	if body.name == "WaveCollision":
+		if is_snapped: return
 		var d = 1
 		var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
 		if dir.y > 0:

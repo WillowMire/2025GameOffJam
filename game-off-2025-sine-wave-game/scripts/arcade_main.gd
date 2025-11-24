@@ -110,6 +110,7 @@ func draw_collision():
 		var i = Vector2(x, sin_func_math(x, a_var, b_var, c_var, d_var))
 		collision_vect_array.append(i)
 
+#change to world thing
 var sin_collision_array : Array[CollisionShape2D] #change to poly or normal depending on what sincollision im doing
 func start_sin_collision() -> void:
 	for i in collision_vect_array.size() - 1:
@@ -195,7 +196,7 @@ func draw_wave(wave_type : String = "") -> void:
 		visual_vect_array.append(i)
 	line.set_points(visual_vect_array)
 
-func sin_func_math(x : float, a : float, b : float, c : float, d : float) -> float:
+func sin_func_math(x : float, a : float = a_var, b : float = b_var, c : float = c_var, d : float = d_var) -> float:
 	# aSin(b(x+c))+d
 	var y
 	y = (a * -sin(b * (x + c))) + d
@@ -230,31 +231,11 @@ func add_score(value : int):
 	if game_ended: return
 	score += value
 	fx_controller.inst_text_pop_up(player.global_position, "+ " + str(value))
-	print("added score: " + str(value))
 
 func start_game():
 	$CanvasLayer/StartScreen.visible = false
 	player.freeze = false
 	running = true
-
-func reset_game():
-	pass
-	#save data
-	#game_ended = false
-	#a_var = initial_a
-	#b_var = initial_b
-	#c_var = initial_c
-	#d_var = initial_d
-	#setup_ui()
-	#update_sin_label()
-	#score = 0
-	#obj_generator.despawn_all()
-	#player.global_position = player_start_node.global_position
-	#player.freeze = true
-	#cam_guide.position = cam_guide.find_pos()
-	#cam.zoom = cam_guide.find_zoom()
-	#draw_wave()
-	#running = false
 
 var game_ended : bool = false
 func end_game(end_type : String):
@@ -266,9 +247,12 @@ func end_game(end_type : String):
 			update_sin_collision()
 	save_top_score()
 	$CanvasLayer/Score.visible = false
+	$CanvasLayer/TopScore.visible = false
 	$CanvasLayer/DistanceTraveled.visible = false
 	$CanvasLayer/EndGameScreen/DistanceTraveled.text = "Distance Traveled: " + str(dist_traveled) + "m"
-	$CanvasLayer/EndGameScreen/Score.text = "Score: " + str(score)
+	var i = ""
+	if score > top_score: i = " (New High Score)"
+	$CanvasLayer/EndGameScreen/Score.text = "Score: " + str(score) + i
 	$CanvasLayer/EndGameScreen.visible = true
 
 func save_top_score():

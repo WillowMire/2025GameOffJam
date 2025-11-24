@@ -3,30 +3,31 @@ class_name _ObjectGeneration
 
 @export var game_node : _ArcadeMain
 @export var cam : Camera2D
+@export var player : _PlayerObject
 var zero_enem = preload("res://objects/zero_enemy.tscn")
+@export var spawn_separation_dist : int
+var initial_pos
 @export var max_spawn_y : float 
 @export var min_spawn_y : float 
-@export var spawn_base_interval : float
-@export var interval_random_variance : float
 
 func _ready() -> void:
-	if spawn_base_interval - interval_random_variance < 0:
-		push_error("timer cant be negative, make sure interval_random_variance is less than spawn_base_interval")
+	pass
+	initial_pos = cam.global_position.x
 
 func _physics_process(delta: float) -> void:
 	if !game_node.running: return
 	spawner(delta)
 	despawner()
 
-var spawn_timer : float
-@onready var temp_spawn_inteval = spawn_base_interval
+var prev_dist
 func spawner(delta : float) -> void:
-	if spawn_timer >= temp_spawn_inteval:
-		temp_spawn_inteval = randf_range(spawn_base_interval - interval_random_variance, spawn_base_interval + interval_random_variance)
+	pass
+	var dist = snappedi((player.global_position.x - initial_pos), spawn_separation_dist) 
+	if dist%spawn_separation_dist == 0 && dist != prev_dist:
+		spawn_zero(get_spawn_location(3))
 		spawn_zero(get_spawn_location(2))
 		spawn_zero(get_spawn_location(1))
-		spawn_timer = 0
-	spawn_timer += delta
+	prev_dist = dist
 
 func check_out_bounds(area : Area2D):
 	var l = get_viewport().get_visible_rect().size.x * (1 / cam.zoom.x) / 2
@@ -45,7 +46,7 @@ func despawn_all() -> void:
 func get_spawn_location(curve_exponent : float) -> Vector2:
 	var l = get_viewport().get_visible_rect().size.x * (1 / cam.zoom.x) / 2
 	var cent = cam.get_screen_center_position().x
-	var offset = min_spawn_y - max_spawn_y
+	var offset = abs(min_spawn_y - max_spawn_y)
 	var tx = pow(max_spawn_y + offset, 1/curve_exponent)
 	var ty = pow(min_spawn_y + offset, 1/curve_exponent)
 	var i = randf_range(tx, ty)
