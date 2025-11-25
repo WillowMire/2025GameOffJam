@@ -12,4 +12,4 @@ func _on_body_entered(body: Node2D) -> void:
 func _on_close_call_body_exited(body: Node2D) -> void:
 	if body.get_script().get_global_name() == "_PlayerObject":
 		if player_die: return
-		body.gained_score.emit(10)
+		body.game_node.add_score(10, "Close Call!", Color(1.0, 0.2, 0.2, 1.0))

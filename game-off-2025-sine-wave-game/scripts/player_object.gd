@@ -13,8 +13,10 @@ var col_timer : float
 
 @warning_ignore("unused_signal")
 signal game_end(end_type_name : String)
-@warning_ignore("unused_signal")
-signal gained_score(amount : int)
+
+func _ready() -> void:
+	if height_to_reach.size() != points_per_height.size():
+		push_error("variables 'height_to_reach' and 'points+per_height' must be equal to fucntion correctly")
 
 func _physics_process(_delta: float) -> void:
 	if game_node.game_ended: return
@@ -28,7 +30,6 @@ func _physics_process(_delta: float) -> void:
 	if is_player_below_wave():
 		snap_player_above_wave()
 		revert_vel()
-		print("is snappy bitch")
 		is_snapped = true
 	
 	check_player_at_crest()
@@ -36,6 +37,8 @@ func _physics_process(_delta: float) -> void:
 	if self.linear_velocity.length() > max_velocity:
 		var opp = self.linear_velocity.orthogonal().orthogonal()
 		self.apply_central_force(opp.normalized() * rebound_force)
+	
+	height_score()
 	
 	prev_vel = self.linear_velocity
 
@@ -60,12 +63,33 @@ func revert_vel():
 
 var is_snapped : bool = false
 func check_player_at_crest():
-	var deriv = game_node.sin_derivative_math(self.global_position.x)
-	if deriv < 0.3 && -0.6 < deriv:
+	var wave_height = game_node.sin_func_math(self.global_position.x)
+	var a = game_node.a_var
+	var n = 20
+	if wave_height < (0 - (a/2) + (a*n/100)):
 		is_snapped = false
 		return
+	
+	#var deriv = game_node.sin_derivative_math(self.global_position.x)
+	#if deriv < 0.3 && -0.6 < deriv:
+		#is_snapped = false
+		#return
 	if is_snapped:
 		snap_player_above_wave()
+
+
+@export var height_to_reach : Array[float]
+@export var points_per_height : Array[int]
+
+var last_y
+func height_score():
+	var y = self.global_position.y
+	for i in height_to_reach.size():
+		if y > height_to_reach[i]: continue
+		if last_y < height_to_reach[i]: continue
+		if y < height_to_reach[i]:
+			game_node.add_score(points_per_height[i], "Sky High!", Color(0.927, 0.347, 0.483, 1.0))
+	last_y = y
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if collided: pass #do this for animation

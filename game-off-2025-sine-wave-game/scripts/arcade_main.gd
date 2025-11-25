@@ -48,16 +48,8 @@ func set_dist_traveled(value : int):
 	dist_traveled = value
 	if value == 0: return
 	if value%10 == 0 && value != prev_dist_traveled:
-		add_score(1)
+		add_score(1, "", Color(0.0, 0.0, 0.0, 0.0))
 	prev_dist_traveled = value
-
-func set_score(value : int):
-	score_label.text = "Score: " + str(value)
-	score = value
-
-func set_top_score(value : int):
-	top_score_label.text = "Top Score: " + str(value)
-	top_score = value
 
 func calc_dist_traveled(distance : int) -> int:
 	#convert distance in pixels to whatever I want
@@ -95,6 +87,23 @@ func _physics_process(delta: float) -> void:
 	draw_collision()
 	update_sin_collision()
 	update_sin_label()
+
+func add_score(value : int, custom_message = "default", color : Color = Color.BLACK):
+	if game_ended: return
+	score += value
+	match custom_message:
+		"default":
+			fx_controller.inst_text_pop_up(player.global_position, "+ " + str(value), color)
+		_:
+			fx_controller.inst_text_pop_up(player.global_position, custom_message, color)
+
+func set_score(value : int):
+	score_label.text = "Score: " + str(value)
+	score = value
+
+func set_top_score(value : int):
+	top_score_label.text = "Top Score: " + str(value)
+	top_score = value
 
 func update_sin_label():
 	var a = str(roundi(a_var))
@@ -191,7 +200,7 @@ func draw_wave(wave_type : String = "") -> void:
 	var l = get_viewport().get_visible_rect().size.x * (1 / cam.zoom.x) / 2
 	var cent = cam.get_screen_center_position().x
 	visual_vect_array.clear()
-	for x in range(cent - l - 50, cent + l + 200, 10):
+	for x in range(cent - l - 50, cent + l + 200, 5):
 		var i = Vector2(x, func_mult * sin_func_math(x, a_var, b_var, c_var, d_var))
 		visual_vect_array.append(i)
 	line.set_points(visual_vect_array)
@@ -217,7 +226,6 @@ func setup_game():
 	initial_c = c_var
 	initial_d = d_var
 	player.connect("game_end", end_game)
-	player.connect("gained_score", add_score)
 	draw_wave()
 	draw_collision()
 	start_sin_collision()
@@ -226,11 +234,6 @@ func setup_game():
 	player.global_position = player_start_node.global_position
 	player.freeze = true
 	running = false
-
-func add_score(value : int):
-	if game_ended: return
-	score += value
-	fx_controller.inst_text_pop_up(player.global_position, "+ " + str(value))
 
 func start_game():
 	$CanvasLayer/StartScreen.visible = false
