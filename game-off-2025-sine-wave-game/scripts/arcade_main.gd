@@ -48,7 +48,7 @@ func set_dist_traveled(value : int):
 	dist_traveled = value
 	if value == 0: return
 	if value%10 == 0 && value != prev_dist_traveled:
-		add_score(1, "", Color(0.0, 0.0, 0.0, 0.0))
+		add_score(10, "", Color(0.0, 0.0, 0.0, 0.0))
 	prev_dist_traveled = value
 
 func calc_dist_traveled(distance : int) -> int:
@@ -218,6 +218,7 @@ func sin_derivative_math(x : float, a = a_var, b = b_var, c = c_var) -> float:
 
 func setup_game():
 	setup_ui()
+	player.global_position = player_start_node.global_position
 	top_score = _SaveLoad.save_contents.top_score
 	start_pos = player_start_node.global_position.x
 	score = 0

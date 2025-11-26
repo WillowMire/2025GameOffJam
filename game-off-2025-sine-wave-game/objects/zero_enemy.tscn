@@ -1,13 +1,21 @@
-[gd_scene load_steps=5 format=3 uid="uid://qmlcghvkiyd8"]
+[gd_scene load_steps=6 format=3 uid="uid://qmlcghvkiyd8"]
 
 [ext_resource type="Script" uid="uid://bhaewonj527ai" path="res://scripts/enem.gd" id="1_6aqg1"]
-[ext_resource type="Texture2D" uid="uid://d1oh54iesvoeo" path="res://sprites/icon.svg" id="2_h3yvs"]
+[ext_resource type="FontFile" uid="uid://qdr87ip5vrhv" path="res://fonts/latinmodern-math.otf" id="3_h3yvs"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6e0rv"]
-radius = 17.75
+radius = 27.6
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6aqg1"]
 radius = 86.15
+
+[sub_resource type="LabelSettings" id="LabelSettings_6k02l"]
+resource_local_to_scene = true
+font = ExtResource("3_h3yvs")
+font_size = 115
+font_color = Color(0.11, 0.11, 0.11, 1)
+outline_size = 3
+outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
 
 [node name="ZeroEnemy" type="Area2D"]
 collision_layer = 2
@@ -18,16 +26,28 @@ script = ExtResource("1_6aqg1")
 shape = SubResource("CircleShape2D_6e0rv")
 debug_color = Color(0.99090034, 0, 0.2783584, 0.41960785)
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(1, 0.61, 0.61, 1)
-scale = Vector2(0.3, 0.3)
-texture = ExtResource("2_h3yvs")
-
 [node name="CloseCall" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CloseCall"]
 shape = SubResource("CircleShape2D_6aqg1")
 debug_color = Color(1, 0, 0.016666412, 0)
+
+[node name="Zero" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -28.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "0"
+label_settings = SubResource("LabelSettings_6k02l")
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

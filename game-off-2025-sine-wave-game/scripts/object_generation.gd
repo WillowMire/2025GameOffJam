@@ -24,6 +24,7 @@ func spawner(delta : float) -> void:
 	pass
 	var dist = snappedi((player.global_position.x - initial_pos), spawn_separation_dist) 
 	if dist%spawn_separation_dist == 0 && dist != prev_dist:
+		spawn_zero(get_spawn_location(4))
 		spawn_zero(get_spawn_location(3))
 		spawn_zero(get_spawn_location(2))
 		spawn_zero(get_spawn_location(1))

@@ -25,7 +25,6 @@ func _process(delta: float) -> void:
 func kill(delta) -> void:
 	alive_timer += delta
 	if alive_timer >= alive_time:
-		print(alive_timer)
 		self.queue_free()
 
 func move_up(delta : float) -> void:

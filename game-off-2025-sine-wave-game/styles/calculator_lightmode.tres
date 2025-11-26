@@ -1,0 +1,11 @@
+[gd_resource type="LabelSettings" load_steps=2 format=3 uid="uid://71coq855m35g"]
+
+[ext_resource type="FontFile" uid="uid://qdr87ip5vrhv" path="res://fonts/latinmodern-math.otf" id="1_6ta8x"]
+
+[resource]
+resource_local_to_scene = true
+font = ExtResource("1_6ta8x")
+font_size = 40
+font_color = Color(0.11, 0.11, 0.11, 1)
+outline_size = 3
+outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)

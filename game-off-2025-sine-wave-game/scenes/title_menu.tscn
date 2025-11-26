@@ -1,6 +1,26 @@
-[gd_scene load_steps=2 format=3 uid="uid://jl7gul5xihvr"]
+[gd_scene load_steps=8 format=3 uid="uid://jl7gul5xihvr"]
 
 [ext_resource type="Script" uid="uid://dnv1eit04aipo" path="res://scripts/title_menu.gd" id="1_ij6cu"]
+[ext_resource type="FontFile" uid="uid://qdr87ip5vrhv" path="res://fonts/latinmodern-math.otf" id="2_m3le7"]
+[ext_resource type="StyleBox" uid="uid://bmfrkdpv7o3jl" path="res://styles/ui_button_normal.tres" id="3_x5lbp"]
+[ext_resource type="StyleBox" uid="uid://b757alr7i5hjc" path="res://styles/ui_button_hover.tres" id="4_6gi7b"]
+[ext_resource type="Texture2D" uid="uid://0by41bif340r" path="res://sprites/Title_Pose.png" id="5_x5lbp"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_brrgq"]
+resource_local_to_scene = true
+font = ExtResource("2_m3le7")
+font_size = 40
+font_color = Color(0.11, 0.11, 0.11, 1)
+outline_size = 3
+outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_qx5l0"]
+resource_local_to_scene = true
+font = ExtResource("2_m3le7")
+font_size = 40
+font_color = Color(0.11, 0.11, 0.11, 1)
+outline_size = 3
+outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
 
 [node name="TitleMenu" type="Control"]
 layout_mode = 3
@@ -13,40 +33,65 @@ script = ExtResource("1_ij6cu")
 
 [node name="Title" type="Label" parent="."]
 layout_mode = 1
-offset_left = 35.0
-offset_top = 29.0
-offset_right = 75.0
-offset_bottom = 52.0
-text = "SinGame"
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -136.5
+offset_top = 92.0
+offset_right = 136.5
+offset_bottom = 150.0
+grow_horizontal = 2
+rotation = -0.2019254
+text = "Sin(x) Surfer"
+label_settings = SubResource("LabelSettings_brrgq")
 
 [node name="Play" type="Button" parent="."]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 69.0
-offset_right = 76.0
-offset_bottom = 100.0
+offset_left = 129.0
+offset_top = 254.0
+offset_right = 309.0
+offset_bottom = 362.0
+theme_override_fonts/font = ExtResource("2_m3le7")
+theme_override_font_sizes/font_size = 56
+theme_override_styles/normal = ExtResource("3_x5lbp")
+theme_override_styles/pressed = ExtResource("4_6gi7b")
+theme_override_styles/hover = ExtResource("4_6gi7b")
 text = "Play"
 
 [node name="Quit" type="Button" parent="."]
 layout_mode = 0
-offset_left = 35.0
-offset_top = 543.0
-offset_right = 77.0
-offset_bottom = 574.0
+offset_left = 129.0
+offset_top = 379.0
+offset_right = 309.0
+offset_bottom = 487.0
+theme_override_fonts/font = ExtResource("2_m3le7")
+theme_override_font_sizes/font_size = 56
+theme_override_styles/normal = ExtResource("3_x5lbp")
+theme_override_styles/pressed = ExtResource("4_6gi7b")
+theme_override_styles/hover = ExtResource("4_6gi7b")
 text = "Quit
 "
 
 [node name="TopScore" type="Label" parent="."]
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -125.0
-offset_top = 29.0
-offset_right = -85.0
+offset_left = 63.0
+offset_top = 11.0
+offset_right = 279.0
 offset_bottom = 52.0
-grow_horizontal = 0
 text = "Top Score: _"
+label_settings = SubResource("LabelSettings_qx5l0")
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PackedVector2Array(0, 0, 62, 70, 125, 127, 170, 157, 235, 185, 293, 197, 353, 197, 434, 187, 493, 164, 548, 134, 599, 108, 644, 89, 689, 76, 755, 63, 826, 55, 897, 53, 968, 63, 1024, 81, 1067, 107, 1109, 147, 1144, 198, 1182, 261)
+default_color = Color(0.85, 0.23799998, 0.23799998, 1)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 508.0
+offset_top = 106.0
+offset_right = 1008.0
+offset_bottom = 606.0
+texture = ExtResource("5_x5lbp")
 
 [connection signal="pressed" from="Play" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]

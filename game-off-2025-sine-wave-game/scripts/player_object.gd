@@ -2,6 +2,7 @@ extends RigidBody2D
 class_name _PlayerObject
 
 @export var game_node : _ArcadeMain
+@export var anim_player : AnimationPlayer
 @export var col_impulse_mult : float
 @export var col_force_mult : float
 @export var downhill_force_mult : float
@@ -19,7 +20,10 @@ func _ready() -> void:
 		push_error("variables 'height_to_reach' and 'points+per_height' must be equal to fucntion correctly")
 
 func _physics_process(_delta: float) -> void:
+	animation()
+	
 	if game_node.game_ended: return
+	
 	if collided:
 		var d = 1
 		var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
@@ -42,6 +46,12 @@ func _physics_process(_delta: float) -> void:
 	
 	prev_vel = self.linear_velocity
 
+func animation() -> void:
+	if self.linear_velocity.y <= 0 && anim_player.current_animation != "player_up":
+		anim_player.play("player_up")
+	elif self.linear_velocity.y > 0 && anim_player.current_animation != "player_down":
+		anim_player.play("player_down")
+
 @export var clipping_forgiveness : float
 func is_player_below_wave() -> bool:
 	var y_off = $CollisionShape2D.shape.radius
@@ -50,22 +60,22 @@ func is_player_below_wave() -> bool:
 		return true
 	else: return false
 
-func snap_player_above_wave():
+func snap_player_above_wave() -> void:
 	var y_off = $CollisionShape2D.shape.radius
 	var y_wave = game_node.sin_func_math(self.global_position.x)
 	var normal = Vector2(1, game_node.sin_derivative_math(self.global_position.x)).normalized().orthogonal()
 	self.global_position = Vector2(self.global_position.x, y_wave + (normal.y * 2 * y_off))
 
 var prev_vel : Vector2
-func revert_vel():
+func revert_vel() -> void:
 	var dir_der = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
 	self.linear_velocity = dir_der.normalized() * prev_vel.length()
 
 var is_snapped : bool = false
-func check_player_at_crest():
+func check_player_at_crest() -> void:
 	var wave_height = game_node.sin_func_math(self.global_position.x)
 	var a = game_node.a_var
-	var n = 20
+	var n = 15
 	if wave_height < (0 - (a/2) + (a*n/100)):
 		is_snapped = false
 		return
@@ -82,7 +92,7 @@ func check_player_at_crest():
 @export var points_per_height : Array[int]
 
 var last_y
-func height_score():
+func height_score() -> void:
 	var y = self.global_position.y
 	for i in height_to_reach.size():
 		if y > height_to_reach[i]: continue
