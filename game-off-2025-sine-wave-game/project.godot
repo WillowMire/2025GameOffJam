@@ -19,6 +19,15 @@ config/icon="res://sprites/icon.svg"
 
 _SaveLoad="*res://scripts/save_load.gd"
 
+[file_customization]
+
+folder_colors={
+"res://objects/": "red",
+"res://scenes/": "orange",
+"res://scripts/": "purple",
+"res://sprites/": "teal"
+}
+
 [input]
 
 up={

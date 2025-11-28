@@ -19,7 +19,10 @@ func _ready() -> void:
 	if height_to_reach.size() != points_per_height.size():
 		push_error("variables 'height_to_reach' and 'points+per_height' must be equal to fucntion correctly")
 
-func _physics_process(_delta: float) -> void:
+func _process(_delta: float) -> void:
+	game_node.fx_controller.update_player_trail_pos(self.global_position)
+
+func _physics_process(delta: float) -> void:
 	animation()
 	
 	if game_node.game_ended: return
@@ -29,7 +32,7 @@ func _physics_process(_delta: float) -> void:
 		var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
 		if dir.y > 0:
 			d = downhill_force_mult
-		self.apply_central_force(dir.normalized() * col_force_mult * d)
+		self.apply_central_force(dir.normalized() * col_force_mult * d * delta)
 	
 	if is_player_below_wave():
 		snap_player_above_wave()

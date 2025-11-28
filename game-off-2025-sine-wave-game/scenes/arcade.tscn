@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=35 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://scripts/arcade_main.gd" id="1_wer3u"]
 [ext_resource type="Script" uid="uid://u51sserba3tc" path="res://scripts/object_generation.gd" id="2_8hgfh"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://ph1epmacmkby" path="res://sprites/grid_2.png" id="6_8hgfh"]
 [ext_resource type="FontFile" uid="uid://qdr87ip5vrhv" path="res://fonts/latinmodern-math.otf" id="6_cmngb"]
 [ext_resource type="Texture2D" uid="uid://di155c1uocoxd" path="res://sprites/player_anim0001.png" id="6_sktuj"]
+[ext_resource type="Texture2D" uid="uid://cscm6unj1ieo1" path="res://sprites/circle_05.png" id="7_sktuj"]
 [ext_resource type="Script" uid="uid://bqeqeb3snc5k1" path="res://scripts/fx_controller.gd" id="7_utn3h"]
 
 [sub_resource type="Curve" id="Curve_658re"]
@@ -22,22 +23,6 @@ radius = 15.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8hgfh"]
 radius = 23.2
-
-[sub_resource type="Animation" id="Animation_m2wjg"]
-resource_name = "player_up"
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("5_0ukt7")]
-}
 
 [sub_resource type="Animation" id="Animation_iwdyi"]
 length = 0.001
@@ -68,6 +53,22 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [ExtResource("6_sktuj")]
+}
+
+[sub_resource type="Animation" id="Animation_m2wjg"]
+resource_name = "player_up"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("5_0ukt7")]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_n02mf"]
@@ -173,6 +174,14 @@ font = ExtResource("6_cmngb")
 font_size = 65
 outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
 
+[sub_resource type="Curve" id="Curve_0ukt7"]
+_data = [Vector2(0, 1), 0.0, 0.033483136, 0, 0, Vector2(0.5838926, 0.21348321), -1.0044945, -1.0044945, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Gradient" id="Gradient_0ukt7"]
+offsets = PackedFloat32Array(0, 0.15447155, 1)
+colors = PackedColorArray(0.08819997, 0.26656002, 0.98, 0.6745098, 0.3196, 0.44368, 0.94, 0.41568628, 1, 0.45999998, 0.45999998, 0)
+
 [node name="Arcade" type="Node2D" node_paths=PackedStringArray("player", "cam_guide", "cam", "obj_generator", "sin_label", "score_label", "top_score_label", "dist_traveled_label", "player_start_node", "fx_controller", "line")]
 script = ExtResource("1_wer3u")
 player = NodePath("PlayerObject")
@@ -236,7 +245,7 @@ script = ExtResource("4_cmngb")
 game_node = NodePath("..")
 anim_player = NodePath("AnimationPlayer")
 col_impulse_mult = 70.0
-col_force_mult = 170.0
+col_force_mult = 2300.0
 downhill_force_mult = 1.3
 max_velocity = 20000.0
 rebound_force = 18.0
@@ -248,7 +257,7 @@ z_index = 2
 shape = SubResource("CircleShape2D_4ltp0")
 
 [node name="Sprite2D" type="Sprite2D" parent="PlayerObject"]
-z_index = 1
+z_index = 2
 scale = Vector2(0.471, 0.471)
 texture = ExtResource("5_0ukt7")
 region_rect = Rect2(3.105, 0, 115.895, 127.5)
@@ -522,10 +531,26 @@ repeat_times = 201
 modulate = Color(0.61, 0.61, 0.61, 1)
 texture = ExtResource("6_8hgfh")
 
-[node name="FXController" type="Node" parent="."]
+[node name="FXController" type="Node" parent="." node_paths=PackedStringArray("text_pop_ups_node", "player_particles_node")]
 script = ExtResource("7_utn3h")
+text_pop_ups_node = NodePath("TextPopUps")
+player_particles_node = NodePath("PlayerParticles")
 
 [node name="TextPopUps" type="Node2D" parent="FXController"]
+
+[node name="PlayerParticles" type="Node2D" parent="FXController"]
+
+[node name="Trail" type="CPUParticles2D" parent="FXController/PlayerParticles"]
+amount = 64
+texture = ExtResource("7_sktuj")
+lifetime = 2.5
+speed_scale = 2.0
+spread = 0.0
+gravity = Vector2(0, 0)
+scale_amount_min = 0.2
+scale_amount_max = 0.2
+scale_amount_curve = SubResource("Curve_0ukt7")
+color_ramp = SubResource("Gradient_0ukt7")
 
 [connection signal="body_entered" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_exited"]
