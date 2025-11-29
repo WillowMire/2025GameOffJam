@@ -7,6 +7,7 @@ var new = preload("res://objects/text_pop_up.tscn")
 @export var player_particles_node : Node2D
 
 func _ready() -> void:
+	await get_tree().physics_frame
 	$PlayerParticles/Trail.emitting = true
 
 func update_player_trail_pos(pos : Vector2):

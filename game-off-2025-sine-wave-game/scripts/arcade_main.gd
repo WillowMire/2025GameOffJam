@@ -14,6 +14,7 @@ class_name _ArcadeMain
 @export var dist_traveled_label : Label
 @export var player_start_node : Node2D
 @export var fx_controller : _FXController
+@export var audio_controller : _AudioController
 
 var sin_collision : CollisionShape2D
 var seg : SegmentShape2D
@@ -48,7 +49,7 @@ func set_dist_traveled(value : int):
 	dist_traveled = value
 	if value == 0: return
 	if value%10 == 0 && value != prev_dist_traveled:
-		add_score(10, "", Color(0.0, 0.0, 0.0, 0.0))
+		add_score(10, "+10", Color(0.28, 0.28, 0.28, 1.0))
 	prev_dist_traveled = value
 
 func calc_dist_traveled(distance : int) -> int:
@@ -91,6 +92,8 @@ func _physics_process(delta: float) -> void:
 func add_score(value : int, custom_message = "default", color : Color = Color.BLACK):
 	if game_ended: return
 	score += value
+	audio_controller.point.pitch_scale = randf_range(0.8, 1.2)
+	audio_controller.point.play()
 	match custom_message:
 		"default":
 			fx_controller.inst_text_pop_up(player.global_position, "+ " + str(value), color)
@@ -249,6 +252,7 @@ func end_game(end_type : String):
 			sin_label.text = "f(x) = 0"
 			draw_wave("zero")
 			update_sin_collision()
+	audio_controller.explosion.play(0)
 	save_top_score()
 	$CanvasLayer/SinFunc.label_settings.font_color = Color(1.0, 0.0, 0.0, 1.0)
 	$CanvasLayer/Score.visible = false

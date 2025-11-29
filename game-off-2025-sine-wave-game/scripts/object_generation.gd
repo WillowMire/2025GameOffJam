@@ -1,9 +1,12 @@
 extends Node2D
 class_name _ObjectGeneration
+## Instantiates all the objects the player can interact with
+
 
 @export var game_node : _ArcadeMain
 @export var cam : Camera2D
 @export var player : _PlayerObject
+## preload for 0 enemy node
 var zero_enem = preload("res://objects/zero_enemy.tscn")
 @export var spawn_separation_dist : int
 var initial_pos
@@ -11,7 +14,7 @@ var initial_pos
 @export var min_spawn_y : float 
 
 func _ready() -> void:
-	pass
+	randomize()
 	initial_pos = cam.global_position.x
 
 func _physics_process(delta: float) -> void:
@@ -21,13 +24,12 @@ func _physics_process(delta: float) -> void:
 
 var prev_dist
 func spawner(delta : float) -> void:
-	pass
 	var dist = snappedi((player.global_position.x - initial_pos), spawn_separation_dist) 
 	if dist%spawn_separation_dist == 0 && dist != prev_dist:
 		spawn_zero(get_spawn_location(4))
 		spawn_zero(get_spawn_location(3))
 		spawn_zero(get_spawn_location(2))
-		spawn_zero(get_spawn_location(1))
+		spawn_zero(get_spawn_location(3))
 	prev_dist = dist
 
 func check_out_bounds(area : Area2D):

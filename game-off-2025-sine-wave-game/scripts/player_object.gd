@@ -102,7 +102,7 @@ func height_score() -> void:
 		if y > height_to_reach[i]: continue
 		if last_y < height_to_reach[i]: continue
 		if y < height_to_reach[i]:
-			game_node.add_score(points_per_height[i], "Sky High!", Color(0.927, 0.347, 0.483, 1.0))
+			game_node.add_score(points_per_height[i], "+" + str(points_per_height[i]), Color(0.71, 0.544, 0.0, 1.0))
 	last_y = y
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
