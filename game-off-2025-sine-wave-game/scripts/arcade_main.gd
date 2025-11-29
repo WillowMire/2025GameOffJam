@@ -250,6 +250,7 @@ func end_game(end_type : String):
 			draw_wave("zero")
 			update_sin_collision()
 	save_top_score()
+	$CanvasLayer/SinFunc.label_settings.font_color = Color(1.0, 0.0, 0.0, 1.0)
 	$CanvasLayer/Score.visible = false
 	$CanvasLayer/TopScore.visible = false
 	$CanvasLayer/DistanceTraveled.visible = false

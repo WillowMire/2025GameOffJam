@@ -17,10 +17,11 @@ signal game_end(end_type_name : String)
 
 func _ready() -> void:
 	if height_to_reach.size() != points_per_height.size():
-		push_error("variables 'height_to_reach' and 'points+per_height' must be equal to fucntion correctly")
+		push_error("variables 'height_to_reach' and 'points+per_height' must be equal to function correctly")
 
 func _process(_delta: float) -> void:
 	game_node.fx_controller.update_player_trail_pos(self.global_position)
+	game_node.fx_controller.emit_grind(is_snapped)
 
 func _physics_process(delta: float) -> void:
 	animation()
@@ -32,7 +33,7 @@ func _physics_process(delta: float) -> void:
 		var dir = Vector2(1, game_node.sin_derivative_math(self.global_position.x))
 		if dir.y > 0:
 			d = downhill_force_mult
-		self.apply_central_force(dir.normalized() * col_force_mult * d * delta)
+		self.apply_central_force(dir.normalized() * col_force_mult * d * delta * 60)
 	
 	if is_player_below_wave():
 		snap_player_above_wave()
@@ -43,7 +44,7 @@ func _physics_process(delta: float) -> void:
 	
 	if self.linear_velocity.length() > max_velocity:
 		var opp = self.linear_velocity.orthogonal().orthogonal()
-		self.apply_central_force(opp.normalized() * rebound_force)
+		self.apply_central_force(opp.normalized() * rebound_force * delta * 60)
 	
 	height_score()
 	

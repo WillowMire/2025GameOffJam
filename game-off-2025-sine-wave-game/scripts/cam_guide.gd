@@ -4,6 +4,7 @@ class_name _CamGuide
 @export var game_node : _ArcadeMain
 @export var player : _PlayerObject
 @export var cam : Camera2D
+@export var min_zoom : Vector2
 @onready var initial_zoom : Vector2 = cam.zoom
 
 func _physics_process(_delta: float) -> void:
@@ -23,7 +24,7 @@ func find_zoom() -> Vector2:
 	zoom = (initial_zoom) * abs(rect_y /(player.global_position.y + 250 - rect_y))
 	
 	#sets minumum cam zoom
-	if zoom.y > initial_zoom.y:
-		zoom = initial_zoom
+	if zoom.y > min_zoom.y:
+		zoom = min_zoom
 	
 	return zoom

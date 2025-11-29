@@ -13,7 +13,7 @@ radius = 86.15
 resource_local_to_scene = true
 font = ExtResource("3_h3yvs")
 font_size = 115
-font_color = Color(0.11, 0.11, 0.11, 1)
+font_color = Color(1, 0, 0, 1)
 outline_size = 3
 outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
 
