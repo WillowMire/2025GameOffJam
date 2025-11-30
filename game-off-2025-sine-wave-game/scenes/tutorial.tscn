@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://wqev243f1wja"]
+
+[ext_resource type="Script" uid="uid://cwc8fqnmnrv3s" path="res://scripts/tutorial.gd" id="1_4kmhl"]
+[ext_resource type="FontFile" uid="uid://qdr87ip5vrhv" path="res://fonts/latinmodern-math.otf" id="1_ph3nu"]
+[ext_resource type="StyleBox" uid="uid://bmfrkdpv7o3jl" path="res://styles/ui_button_normal.tres" id="2_4kmhl"]
+[ext_resource type="StyleBox" uid="uid://b757alr7i5hjc" path="res://styles/ui_button_hover.tres" id="3_cq4me"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_4kmhl"]
+resource_local_to_scene = true
+paragraph_spacing = 17.635
+font = ExtResource("1_ph3nu")
+font_size = 45
+font_color = Color(0.11, 0.11, 0.11, 1)
+outline_size = 3
+outline_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
+
+[node name="Tutorial" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4kmhl")
+
+[node name="Back" type="Button" parent="."]
+layout_mode = 0
+offset_right = 212.0
+offset_bottom = 114.0
+theme_override_fonts/font = ExtResource("1_ph3nu")
+theme_override_font_sizes/font_size = 66
+theme_override_styles/normal = ExtResource("2_4kmhl")
+theme_override_styles/hover = ExtResource("3_cq4me")
+text = "Back"
+
+[node name="Info" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -551.0
+offset_top = -207.0
+offset_right = 551.0
+offset_bottom = 282.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Left and Right: makes the entire wave move left and right
+Up and Down: changes the amplitude of the wave (slope, sharpness)
+The goal is to avoid the Zeros (which would turn the wave flat and ruin your grind)
+You gain points per distance traveled, whenever you get to certain heights, and whenever you barely scrape past a Zero"
+label_settings = SubResource("LabelSettings_4kmhl")
+autowrap_mode = 2
+
+[connection signal="pressed" from="Back" to="." method="_on_back_pressed"]

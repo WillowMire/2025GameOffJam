@@ -253,6 +253,7 @@ func end_game(end_type : String):
 			draw_wave("zero")
 			update_sin_collision()
 	audio_controller.explosion.play(0)
+	audio_controller.background.stop()
 	save_top_score()
 	$CanvasLayer/SinFunc.label_settings.font_color = Color(1.0, 0.0, 0.0, 1.0)
 	$CanvasLayer/Score.visible = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://c6uubfh172683"]
+[gd_scene load_steps=43 format=3 uid="uid://c6uubfh172683"]
 
 [ext_resource type="Script" uid="uid://cafxbpaqogk35" path="res://scripts/arcade_main.gd" id="1_wer3u"]
 [ext_resource type="Script" uid="uid://u51sserba3tc" path="res://scripts/object_generation.gd" id="2_8hgfh"]
@@ -14,9 +14,10 @@
 [ext_resource type="AudioStream" uid="uid://b6cdcg3uehpdp" path="res://audio/explosion.wav" id="12_iwdyi"]
 [ext_resource type="Script" uid="uid://f87dsgynata6" path="res://scripts/audio_controller.gd" id="12_xwleh"]
 [ext_resource type="AudioStream" uid="uid://bc1pqplboi2g" path="res://audio/pickup_coin.wav" id="14_n02mf"]
+[ext_resource type="AudioStream" uid="uid://cob8p0m0506f2" path="res://audio/background_music.mp3" id="15_fgq0x"]
 
 [sub_resource type="Curve" id="Curve_658re"]
-_data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.107382566, 0.6629214), 2.604787, 2.604787, 0, 0, Vector2(0.4362416, 1), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 0), 0.0, 5.515918, 0, 0, Vector2(0.14765102, 0.6629214), 1.6741576, 1.6741576, 0, 0, Vector2(0.83221483, 1), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_658re"]
@@ -163,6 +164,10 @@ keycode = 4194309
 [sub_resource type="Shortcut" id="Shortcut_n02mf"]
 events = [SubResource("InputEventKey_xwleh")]
 
+[sub_resource type="LabelSettings" id="LabelSettings_fgq0x"]
+font = ExtResource("6_cmngb")
+font_size = 24
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cmngb"]
 bg_color = Color(0.5544, 0.64548004, 0.72, 0.5686275)
 border_width_left = 70
@@ -209,12 +214,12 @@ audio_controller = NodePath("AudioController")
 line = NodePath("SinWave")
 a_var = 100.0
 b_var = 0.008
-min_control_speed = 150.0
-max_control_speed = 300.0
+min_control_speed = 250.0
+max_control_speed = 500.0
 v_move_curve = SubResource("Curve_658re")
-v_up_multiplier = 0.38
+v_up_multiplier = 0.3
 v_down_multiplier = 1.8
-h_move_control_lerp_time = 0.5
+h_move_control_lerp_time = 0.6
 
 [node name="InitialPlayerPosition" type="Node2D" parent="."]
 position = Vector2(0, -49)
@@ -225,7 +230,7 @@ game_node = NodePath("..")
 cam = NodePath("../CamGuide/MainCam")
 player = NodePath("../PlayerObject")
 spawn_separation_dist = 1200
-max_spawn_y = -1600.0
+max_spawn_y = -1700.0
 min_spawn_y = 100.0
 
 [node name="ZeroSpawn" type="Node2D" parent="ObjectGeneration"]
@@ -259,8 +264,8 @@ script = ExtResource("4_cmngb")
 game_node = NodePath("..")
 anim_player = NodePath("AnimationPlayer")
 col_impulse_mult = 40.0
-col_force_mult = 180.0
-downhill_force_mult = 1.3
+col_force_mult = 190.0
+downhill_force_mult = 1.4
 max_velocity = 20000.0
 rebound_force = 18.0
 height_to_reach = Array[float]([-1000.0, -2000.0, -2950.0])
@@ -390,7 +395,6 @@ text = "Pos: (x, y)"
 label_settings = SubResource("LabelSettings_4ltp0")
 
 [node name="EndGameScreen" type="Panel" parent="CanvasLayer"]
-visible = false
 z_index = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -494,6 +498,22 @@ shortcut = SubResource("Shortcut_n02mf")
 text = "Play Again
 "
 
+[node name="Enter" type="Label" parent="CanvasLayer/EndGameScreen/PlayAgain"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -72.0
+offset_right = 72.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "(Press Enter)"
+label_settings = SubResource("LabelSettings_fgq0x")
+horizontal_alignment = 1
+
 [node name="StartScreen" type="Panel" parent="CanvasLayer"]
 visible = false
 z_index = 3
@@ -587,10 +607,11 @@ scale_amount_max = 0.1
 color = Color(0.89599997, 0.87, 1, 1)
 color_ramp = SubResource("Gradient_iwdyi")
 
-[node name="AudioController" type="Node" parent="." node_paths=PackedStringArray("explosion", "point")]
+[node name="AudioController" type="Node" parent="." node_paths=PackedStringArray("explosion", "point", "background")]
 script = ExtResource("12_xwleh")
 explosion = NodePath("Explosion")
 point = NodePath("Point")
+background = NodePath("Background")
 
 [node name="Explosion" type="AudioStreamPlayer" parent="AudioController"]
 stream = ExtResource("12_iwdyi")
@@ -599,6 +620,11 @@ volume_db = -21.454
 [node name="Point" type="AudioStreamPlayer" parent="AudioController"]
 stream = ExtResource("14_n02mf")
 volume_db = -20.242
+
+[node name="Background" type="AudioStreamPlayer" parent="AudioController"]
+stream = ExtResource("15_fgq0x")
+volume_db = -20.77
+autoplay = true
 
 [connection signal="body_entered" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_entered"]
 [connection signal="body_exited" from="PlayerObject/Area2D" to="PlayerObject" method="_on_area_2d_body_exited"]

@@ -23,13 +23,13 @@ func _physics_process(delta: float) -> void:
 	despawner()
 
 var prev_dist
-func spawner(delta : float) -> void:
+func spawner(_delta : float) -> void:
 	var dist = snappedi((player.global_position.x - initial_pos), spawn_separation_dist) 
 	if dist%spawn_separation_dist == 0 && dist != prev_dist:
-		spawn_zero(get_spawn_location(4))
-		spawn_zero(get_spawn_location(3))
-		spawn_zero(get_spawn_location(2))
-		spawn_zero(get_spawn_location(3))
+		spawn_zero(get_spawn_location(1.0/4.0))
+		spawn_zero(get_spawn_location(1.0/3.0))
+		spawn_zero(get_spawn_location(1.0/2.0))
+		spawn_zero(get_spawn_location(1.0/3.0))
 	prev_dist = dist
 
 func check_out_bounds(area : Area2D):
